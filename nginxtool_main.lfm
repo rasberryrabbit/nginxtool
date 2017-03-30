@@ -54,7 +54,6 @@ object FormNginxtool: TFormNginxtool
     Top = 0
     Width = 120
     Caption = 'Modify Config File'
-    OnClick = CheckBoxModConfClick
     TabOrder = 4
   end
 end

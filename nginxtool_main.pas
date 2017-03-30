@@ -238,6 +238,7 @@ begin
      rx.Free;
    end;
  if CheckBoxModConf.Checked then begin
+   chunk_modified:=False;
    // check 'chunk_size 8192;'
    rx := TRegExpr.Create('rtmp\s+\{.+server\s+\{.+chunk_size\s+(\d+)\;');
    try
@@ -470,11 +471,12 @@ procedure TFormNginxtool.FormShow(Sender: TObject);
 var
   IPBuf:array[0..254] of char;
 begin
-  VerboseNginxConfig;
   GetIPAddr(IPBuf,sizeof(IPBuf));
   loglist.AddLog(Format('> IP Address: %s',[IPBuf]));
   CheckBox1.Checked:=ReadINIFile(1);
   CheckBoxModConf.Checked:=ReadINIFile(2);
+  CheckBoxModConf.OnClick:=@CheckBoxModConfClick;
+  VerboseNginxConfig;
 end;
 
 {$ifdef WINDOWS}
