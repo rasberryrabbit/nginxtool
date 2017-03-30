@@ -18,6 +18,7 @@ type
     CheckBox1: TCheckBox;
     CheckBoxModConf: TCheckBox;
     Panel1: TPanel;
+    Timer1: TTimer;
     UniqueInstance1: TUniqueInstance;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -26,6 +27,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Panel1Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
 
   public
@@ -46,6 +48,7 @@ var
   UseAboveNormalProcess:Boolean;
   {$endif}
   checkflag:string = '';
+  ppval:DWORD;
 
 
 {$R *.lfm}
@@ -136,7 +139,6 @@ begin
   end;
 end;
 
-(*
 procedure ProcessPriority(const name:string; priority:dword);
 var
    processids:array[0..1023] of DWord;
@@ -176,7 +178,6 @@ begin
     end;
   end;
 end;
-*)
 {$endif}
 
 { TFormNginxtool }
@@ -184,6 +185,15 @@ end;
 procedure TFormNginxtool.Panel1Click(Sender: TObject);
 begin
 
+end;
+
+procedure TFormNginxtool.Timer1Timer(Sender: TObject);
+begin
+ {$ifdef WINDOWS}
+ if CheckBox1.Checked then
+   ProcessPriority('nginx.exe',ppval);
+ {$endif}
+ Timer1.Enabled:=False;
 end;
 
 procedure TFormNginxtool.VerboseNginxConfig;
@@ -380,7 +390,6 @@ procedure TFormNginxtool.Button1Click(Sender: TObject);
 var
   myprocess:TProcess;
   i:integer;
-  ppval:DWORD;
 begin
   {$ifdef WINDOWS}
   if checkEnumProcess('nginx.exe') then begin
@@ -409,12 +418,7 @@ begin
     {$endif}
     try
       myprocess.Execute;
-      (*
-      {$ifdef WINDOWS}
-      if CheckBox1.Checked then
-        ProcessPriority('nginx.exe',ppval);
-      {$endif}
-      *)
+      Timer1.Enabled:=True;
       loglist.AddLog('> nginx started');
     except
       on e:exception do

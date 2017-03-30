@@ -46,7 +46,6 @@ object FormNginxtool: TFormNginxtool
     Width = 140
     Caption = 'Above Normal Priority'
     TabOrder = 3
-    Visible = False
   end
   object CheckBoxModConf: TCheckBox
     Left = 184
@@ -60,5 +59,12 @@ object FormNginxtool: TFormNginxtool
     Enabled = True
     Left = 372
     Top = 20
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 500
+    OnTimer = Timer1Timer
+    Left = 432
+    Top = 22
   end
 end
