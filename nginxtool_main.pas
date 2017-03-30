@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls;
+  StdCtrls, UniqueInstance;
 
 type
 
@@ -18,6 +18,7 @@ type
     CheckBox1: TCheckBox;
     CheckBoxModConf: TCheckBox;
     Panel1: TPanel;
+    UniqueInstance1: TUniqueInstance;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure CheckBoxModConfClick(Sender: TObject);
@@ -195,6 +196,7 @@ var
  workercount, chunksize : Integer;
  has_autopush, chunk_modified : Boolean;
 begin
+ chunk_modified:=False;
  try
    // read config file
    fs := TFileStream.Create('conf/nginx.conf',fmOpenRead or fmShareDenyNone);
@@ -216,9 +218,24 @@ begin
      rx.ModifierI:=True;
      if rx.Exec(buf) then begin
        workercount:=StrToIntDef(rx.Match[1],0);
-       loglist.AddLog(rx.Match[0]);
-     end else
+       if CheckBoxModConf.Checked then begin
+         if workercount<>1 then begin
+           buf:=Copy(buf,1,rx.MatchPos[1]-1)+'1'+
+                Copy(buf,rx.MatchPos[1]+rx.MatchLen[1]);
+           chunk_modified:=True;
+           loglist.AddLog('worker_processes 1;');
+         end;
+       end;
+       if (not CheckBoxModConf.Checked) or (workercount=1) then
+         loglist.AddLog(rx.Match[0]);
+     end else begin
        workercount:=0;
+       if CheckBoxModConf.Checked then begin
+         buf:= 'worker_processes 1;'#10+buf;
+         chunk_modified:=True;
+         loglist.AddLog('worker_processes 1;');
+       end;
+     end;
    finally
      rx.Free;
    end;
@@ -229,16 +246,18 @@ begin
      has_autopush:=False;
      if rx.Exec(buf) then begin
        has_autopush:=UpperCase(rx.Match[1])='ON';
-       if not has_autopush then begin
-         buf:=rx.Replace(buf,'',False);
-       end;
-       loglist.AddLog(rx.Match[0]);
+       if CheckBoxModConf.Checked then begin
+         //if not has_autopush then begin
+           buf:=rx.Replace(buf,'',False);
+         chunk_modified:=True;
+         loglist.AddLog('rtmp_auto_push removed');
+       end else
+         loglist.AddLog(rx.Match[0]);
      end;
    finally
      rx.Free;
    end;
  if CheckBoxModConf.Checked then begin
-   chunk_modified:=False;
    // check 'chunk_size 8192;'
    rx := TRegExpr.Create('rtmp\s+\{.+server\s+\{.+chunk_size\s+(\d+)\;');
    try
@@ -264,12 +283,14 @@ begin
    finally
      rx.Free;
    end;
+   (*
    // add 'rtmp_auto_push on'
    if (workercount<>1) and (not has_autopush) then begin
      buf:='rtmp_auto_push on;'#10+buf;
      chunk_modified:=True;
      loglist.AddLog('rtmp_auto_push on; added');
    end;
+   *)
    // update nginx.conf
    if chunk_modified then begin
      try
@@ -328,6 +349,7 @@ begin
   loglist.Align:=alClient;
   loglist.Color:=clWhite;
   loglist.LineLimit:=1000;
+  Application.SingleInstanceEnabled:=True;
 end;
 
 procedure TFormNginxtool.FormDestroy(Sender: TObject);

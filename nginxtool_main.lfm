@@ -56,4 +56,9 @@ object FormNginxtool: TFormNginxtool
     Caption = 'Modify Config File'
     TabOrder = 4
   end
+  object UniqueInstance1: TUniqueInstance
+    Enabled = True
+    Left = 372
+    Top = 20
+  end
 end
