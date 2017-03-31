@@ -49,6 +49,7 @@ var
   {$endif}
   checkflag:string = '';
   ppval:DWORD;
+  nginx_process_find:Integer=0;
 
 
 {$R *.lfm}
@@ -161,6 +162,7 @@ var
                GetLastError;
                loglist.AddLog(Format('Cannot set process priority %d',[ph]));
              end else begin
+               Inc(nginx_process_find);
                loglist.AddLog(Format('Set process priority %d',[ph]));
              end;
          end;
@@ -193,7 +195,8 @@ begin
  if CheckBox1.Checked then
    ProcessPriority('nginx.exe',ppval);
  {$endif}
- Timer1.Enabled:=False;
+ if nginx_process_find>0 then
+   Timer1.Enabled:=False;
 end;
 
 procedure TFormNginxtool.VerboseNginxConfig;
@@ -418,6 +421,7 @@ begin
     {$endif}
     try
       myprocess.Execute;
+      nginx_process_find:=0;
       Timer1.Enabled:=True;
       loglist.AddLog('> nginx started');
     except
