@@ -1,70 +1,105 @@
 object FormNginxtool: TFormNginxtool
-  Left = 276
-  Height = 330
+  Left = 281
+  Height = 340
   Top = 140
-  Width = 562
+  Width = 557
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'nginx rtmp tool'
-  ClientHeight = 330
-  ClientWidth = 562
+  ClientHeight = 340
+  ClientWidth = 557
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '1.7'
   object Panel1: TPanel
     Left = 16
-    Height = 261
-    Top = 56
-    Width = 532
+    Height = 199
+    Top = 128
+    Width = 527
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvLowered
-    TabOrder = 2
+    TabOrder = 3
     OnClick = Panel1Click
   end
   object Button1: TButton
     Left = 16
     Height = 25
-    Top = 24
+    Top = 96
     Width = 112
     Caption = '&Start'
     OnClick = Button1Click
-    TabOrder = 0
+    TabOrder = 1
   end
   object Button2: TButton
-    Left = 184
+    Left = 160
     Height = 25
-    Top = 24
+    Top = 96
     Width = 123
     Caption = 'Sto&p'
     OnClick = Button2Click
-    TabOrder = 1
+    TabOrder = 2
   end
-  object CheckBox1: TCheckBox
-    Left = 16
-    Height = 19
+  object GroupBox1: TGroupBox
+    Left = 8
+    Height = 81
     Top = 0
-    Width = 140
-    Caption = 'Above Normal Priority'
-    TabOrder = 3
-  end
-  object CheckBoxModConf: TCheckBox
-    Left = 184
-    Height = 19
-    Top = 0
-    Width = 120
-    Caption = 'Modify Config File'
-    TabOrder = 4
+    Width = 536
+    Anchors = [akTop, akLeft, akRight]
+    Caption = ' Option '
+    ClientHeight = 64
+    ClientWidth = 532
+    TabOrder = 0
+    object CheckBoxModConf: TCheckBox
+      Left = 178
+      Height = 19
+      Top = 4
+      Width = 120
+      Caption = 'Modify Config File'
+      TabOrder = 0
+    end
+    object CheckBox1: TCheckBox
+      Left = 10
+      Height = 19
+      Top = 4
+      Width = 140
+      Caption = 'Above Normal Priority'
+      TabOrder = 1
+    end
+    object Label1: TLabel
+      Left = 10
+      Height = 12
+      Top = 35
+      Width = 73
+      Caption = 'Chunk Size :'
+      ParentColor = False
+    end
+    object ComboBoxChunk: TComboBox
+      Left = 92
+      Height = 23
+      Top = 30
+      Width = 68
+      ItemHeight = 15
+      ItemIndex = 1
+      Items.Strings = (
+        '4096'
+        '8192'
+      )
+      OnCloseUp = ComboBoxChunkCloseUp
+      OnKeyPress = ComboBoxChunkKeyPress
+      TabOrder = 2
+      Text = '8192'
+    end
   end
   object UniqueInstance1: TUniqueInstance
     Enabled = True
-    Left = 372
-    Top = 20
+    Left = 328
+    Top = 88
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 500
     OnTimer = Timer1Timer
-    Left = 432
-    Top = 22
+    Left = 376
+    Top = 88
   end
 end

@@ -17,12 +17,17 @@ type
     Button2: TButton;
     CheckBox1: TCheckBox;
     CheckBoxModConf: TCheckBox;
+    ComboBoxChunk: TComboBox;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
     Panel1: TPanel;
     Timer1: TTimer;
     UniqueInstance1: TUniqueInstance;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure CheckBoxModConfClick(Sender: TObject);
+    procedure ComboBoxChunkCloseUp(Sender: TObject);
+    procedure ComboBoxChunkKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -201,7 +206,7 @@ end;
 
 procedure TFormNginxtool.VerboseNginxConfig;
 var
- buf, bufrtmp : string;
+ buf, bufrtmp, schunksize : string;
  fs : TFileStream;
  bufsize, bufloc, bufpos, bufopen : Integer;
  rx, rxrtmp : TRegExpr;
@@ -210,6 +215,11 @@ var
  has_autopush, chunk_modified : Boolean;
 begin
  chunk_modified:=False;
+ schunksize:=Trim(ComboBoxChunk.Text);
+ if StrToIntDef(schunksize,0)=0 then begin
+   schunksize:='4096';
+   ComboBoxChunk.Text:=schunksize;
+ end;
  try
    // read config file
    fs := TFileStream.Create('conf/nginx.conf',fmOpenRead or fmShareDenyNone);
@@ -276,8 +286,8 @@ begin
    try
      rx.ModifierI:=True;
      if rx.Exec(buf) then begin
-       if StrToIntDef(rx.Match[1],0)<8192 then begin
-         buf:=Copy(buf,1,rx.MatchPos[1]-1)+'8192'+Copy(buf,rx.MatchPos[1]+rx.MatchLen[1]);
+       if StrToIntDef(rx.Match[1],0)<>0 then begin
+         buf:=Copy(buf,1,rx.MatchPos[1]-1)+schunksize+Copy(buf,rx.MatchPos[1]+rx.MatchLen[1]);
          chunk_modified:=True;
        end;
      end else begin
@@ -285,7 +295,7 @@ begin
        try
          rxrtmp.ModifierI:=True;
          if rxrtmp.Exec(buf) then begin
-           buf:=Copy(buf,1,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]-1)+#10#9#9'chunk_size 8192;'#10+
+           buf:=Copy(buf,1,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]-1)+#10#9#9'chunk_size '+schunksize+';'#10+
                 Copy(buf,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]);
            chunk_modified:=True;
          end;
@@ -368,7 +378,7 @@ end;
 procedure TFormNginxtool.FormDestroy(Sender: TObject);
 var
   fs : TFileStream;
-  s : string;
+  s,schunk : string;
   i : Integer;
 begin
   s:='00';
@@ -376,6 +386,7 @@ begin
    s[1]:='1';
   if CheckBoxModConf.Checked then
    s[2]:='1';
+  s:=s+ComboBoxChunk.Text;
   if checkflag<>s then begin
     try
       fs:=TFileStream.Create('nginxtool.ini',fmOpenWrite or fmCreate or fmShareDenyNone);
@@ -472,28 +483,49 @@ begin
     VerboseNginxConfig;
 end;
 
+procedure TFormNginxtool.ComboBoxChunkCloseUp(Sender: TObject);
+begin
+  CheckBoxModConfClick(nil);
+end;
+
+procedure TFormNginxtool.ComboBoxChunkKeyPress(Sender: TObject; var Key: char);
+begin
+  if Key=#13 then begin
+    Key:=#0;
+    CheckBoxModConfClick(nil);
+  end;
+end;
+
 function ReadINIFile(idx:Integer):Boolean;
 var
   fs : TFileStream;
   s : string;
+  bsize : Integer;
 begin
-  s:='01';
+  s:='018192';
   if idx>Length(s) then
     idx:=Length(s);
   if checkflag='' then begin
     try
       fs:=TFileStream.Create('nginxtool.ini',fmOpenRead or fmShareDenyNone);
       try
+        bsize:=fs.Size;
+        if bsize>8 then
+          bsize:=8;
+        SetLength(s,bsize);
         fs.Read(s[1],Length(s));
       finally
         fs.Free;
       end;
     except
-      s:='01';
+      s:='018192';
     end;
     checkflag:=s;
   end;
-  Result:=checkflag[idx]='1';
+  if idx<3 then
+    Result:=checkflag[idx]='1'
+    else
+      Result:=False;
 end;
 
 
@@ -505,6 +537,7 @@ begin
   loglist.AddLog(Format('> IP Address: %s',[IPBuf]));
   CheckBox1.Checked:=ReadINIFile(1);
   CheckBoxModConf.Checked:=ReadINIFile(2);
+  ComboBoxChunk.Text:=Copy(checkflag,3);
   CheckBoxModConf.OnClick:=@CheckBoxModConfClick;
   VerboseNginxConfig;
 end;
