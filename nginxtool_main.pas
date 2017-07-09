@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, UniqueInstance;
+  StdCtrls, JSONPropStorage, UniqueInstance;
 
 type
 
@@ -15,11 +15,18 @@ type
   TFormNginxtool = class(TForm)
     Button1: TButton;
     Button2: TButton;
-    CheckBox1: TCheckBox;
+    CheckBox_priority: TCheckBox;
     CheckBoxModConf: TCheckBox;
+    ComboBox_meta: TComboBox;
     ComboBoxChunk: TComboBox;
+    ComboBox_waitvideo: TComboBox;
+    ComboBox_waitkey: TComboBox;
     GroupBox1: TGroupBox;
+    JSONPropStorage1: TJSONPropStorage;
     Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     Panel1: TPanel;
     Timer1: TTimer;
     UniqueInstance1: TUniqueInstance;
@@ -28,6 +35,8 @@ type
     procedure CheckBoxModConfClick(Sender: TObject);
     procedure ComboBoxChunkCloseUp(Sender: TObject);
     procedure ComboBoxChunkKeyPress(Sender: TObject; var Key: char);
+    procedure ComboBox_metaCloseUp(Sender: TObject);
+    procedure ComboBox_waitvideoCloseUp(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -197,24 +206,48 @@ end;
 procedure TFormNginxtool.Timer1Timer(Sender: TObject);
 begin
  {$ifdef WINDOWS}
- if CheckBox1.Checked then
+ if CheckBox_priority.Checked then
    ProcessPriority('nginx.exe',ppval);
  {$endif}
  if nginx_process_find>0 then
    Timer1.Enabled:=False;
 end;
 
+
+function checkConfigComment(const s:string):Boolean;
+var
+  i,len:Integer;
+begin
+  Result:=False;
+  i:=1;
+  len:=Length(s);
+  while i<=len do begin
+    if s[i]>#32 then
+      break;
+    Inc(i);
+  end;
+  while i<=len do begin
+    if s[i]='#' then begin
+      Result:=True;
+      break;
+    end;
+    Inc(i);
+  end;
+end;
+
 procedure TFormNginxtool.VerboseNginxConfig;
 var
- buf, bufrtmp, schunksize : string;
+ buf, bufrtmp, schunksize, sRtmpMeta : string;
  fs : TFileStream;
- bufsize, bufloc, bufpos, bufopen : Integer;
+ bufsize, bufloc, bufpos, bufopen, rtmpidx, ii, ij : Integer;
  rx, rxrtmp : TRegExpr;
  templist : TStringList;
  workercount, chunksize : Integer;
  has_autopush, chunk_modified : Boolean;
+ IPBuf:array[0..254] of char;
 begin
  chunk_modified:=False;
+ loglist.AddLog('----- nginx config -----');
  schunksize:=Trim(ComboBoxChunk.Text);
  if StrToIntDef(schunksize,0)=0 then begin
    schunksize:='4096';
@@ -306,6 +339,72 @@ begin
    finally
      rx.Free;
    end;
+   // insert meta copy
+   rx := TRegExpr.Create('meta\s+[^;]+;');
+   try
+     rx.ModifierI:=True;
+     if rx.Exec(buf) then begin
+       buf:=rx.Replace(buf,'meta '+ComboBox_meta.Text+';',False);
+       chunk_modified:=True;
+     end else begin
+         rxrtmp:=TRegExpr.Create('rtmp\s+\{[^\{]+server\s+\{\s+[^\{]+application\s+(\S+)\s+\{');
+         try
+           if rxrtmp.Exec(buf) then begin
+             buf:=Copy(buf,1,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]-1)+#10#9#9#9'meta '+ComboBox_meta.Text+';'#10+
+                  Copy(buf,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]);
+             chunk_modified:=True;
+           end;
+         finally
+           rxrtmp.Free;
+         end;
+       end;
+   finally
+     rx.Free;
+   end;
+   // wait_video
+   rx := TRegExpr.Create('wait_video\s+[^;]+;');
+   try
+     rx.ModifierI:=True;
+     if rx.Exec(buf) then begin
+       buf:=rx.Replace(buf,'wait_video '+ComboBox_waitvideo.Text+';',False);
+       chunk_modified:=True;
+     end else begin
+         rxrtmp:=TRegExpr.Create('rtmp\s+\{[^\{]+server\s+\{\s+[^\{]+application\s+(\S+)\s+\{');
+         try
+           if rxrtmp.Exec(buf) then begin
+             buf:=Copy(buf,1,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]-1)+#10#9#9#9'wait_video '+ComboBox_waitvideo.Text+';'#10+
+                  Copy(buf,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]);
+             chunk_modified:=True;
+           end;
+         finally
+           rxrtmp.Free;
+         end;
+       end;
+   finally
+     rx.Free;
+   end;
+   // wait_key
+   rx := TRegExpr.Create('wait_key\s+[^;]+;');
+   try
+     rx.ModifierI:=True;
+     if rx.Exec(buf) then begin
+       buf:=rx.Replace(buf,'wait_key '+ComboBox_waitkey.Text+';',False);
+       chunk_modified:=True;
+     end else begin
+         rxrtmp:=TRegExpr.Create('rtmp\s+\{[^\{]+server\s+\{\s+[^\{]+application\s+(\S+)\s+\{');
+         try
+           if rxrtmp.Exec(buf) then begin
+             buf:=Copy(buf,1,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]-1)+#10#9#9#9'wait_key '+ComboBox_waitkey.Text+';'#10+
+                  Copy(buf,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]);
+             chunk_modified:=True;
+           end;
+         finally
+           rxrtmp.Free;
+         end;
+       end;
+   finally
+     rx.Free;
+   end;
    (*
    // add 'rtmp_auto_push on'
    if (workercount<>1) and (not has_autopush) then begin
@@ -362,6 +461,8 @@ begin
  finally
    rx.Free;
  end;
+ GetIPAddr(IPBuf,sizeof(IPBuf));
+ loglist.AddLog(Format('> IP Address: %s',[IPBuf]));
 end;
 
 procedure TFormNginxtool.FormCreate(Sender: TObject);
@@ -376,27 +477,16 @@ begin
 end;
 
 procedure TFormNginxtool.FormDestroy(Sender: TObject);
-var
-  fs : TFileStream;
-  s,schunk : string;
-  i : Integer;
 begin
-  s:='00';
-  if CheckBox1.Checked then
-   s[1]:='1';
-  if CheckBoxModConf.Checked then
-   s[2]:='1';
-  s:=s+ComboBoxChunk.Text;
-  if checkflag<>s then begin
-    try
-      fs:=TFileStream.Create('nginxtool.ini',fmOpenWrite or fmCreate or fmShareDenyNone);
-      try
-        fs.Write(s[1],Length(s));
-      finally
-        fs.Free;
-      end;
-    except
-    end;
+  JSONPropStorage1.WriteBoolean('priority',CheckBox_priority.Checked);
+  JSONPropStorage1.WriteBoolean('modify',CheckBoxModConf.Checked);
+  JSONPropStorage1.WriteString('chunk_size',ComboBoxChunk.Text);
+  JSONPropStorage1.WriteInteger('meta',ComboBox_meta.ItemIndex);
+  JSONPropStorage1.WriteInteger('wait_video',ComboBox_waitvideo.ItemIndex);
+  JSONPropStorage1.WriteInteger('wait_key',ComboBox_waitkey.ItemIndex);
+  try
+    JSONPropStorage1.Save;
+  except
   end;
 end;
 
@@ -420,7 +510,7 @@ begin
       myprocess.Environment.Add(GetEnvironmentString(i));
     myprocess.Executable:='nginx';
     {$ifdef WINDOWS}
-    if CheckBox1.Checked then
+    if CheckBox_priority.Checked then
       if UseAboveNormalProcess then begin
         myprocess.Priority:=ppAboveNormal;
         ppval:=ABOVE_NORMAL_PRIORITY_CLASS;
@@ -496,48 +586,29 @@ begin
   end;
 end;
 
-function ReadINIFile(idx:Integer):Boolean;
-var
-  fs : TFileStream;
-  s : string;
-  bsize : Integer;
+procedure TFormNginxtool.ComboBox_metaCloseUp(Sender: TObject);
 begin
-  s:='018192';
-  if idx>Length(s) then
-    idx:=Length(s);
-  if checkflag='' then begin
-    try
-      fs:=TFileStream.Create('nginxtool.ini',fmOpenRead or fmShareDenyNone);
-      try
-        bsize:=fs.Size;
-        if bsize>8 then
-          bsize:=8;
-        SetLength(s,bsize);
-        fs.Read(s[1],Length(s));
-      finally
-        fs.Free;
-      end;
-    except
-      s:='018192';
-    end;
-    checkflag:=s;
-  end;
-  if idx<3 then
-    Result:=checkflag[idx]='1'
-    else
-      Result:=False;
+  CheckBoxModConfClick(nil);
 end;
 
+procedure TFormNginxtool.ComboBox_waitvideoCloseUp(Sender: TObject);
+begin
+  CheckBoxModConfClick(nil);
+end;
 
 procedure TFormNginxtool.FormShow(Sender: TObject);
-var
-  IPBuf:array[0..254] of char;
 begin
-  GetIPAddr(IPBuf,sizeof(IPBuf));
-  loglist.AddLog(Format('> IP Address: %s',[IPBuf]));
-  CheckBox1.Checked:=ReadINIFile(1);
-  CheckBoxModConf.Checked:=ReadINIFile(2);
-  ComboBoxChunk.Text:=Copy(checkflag,3);
+  try
+    JSONPropStorage1.Restore;
+    CheckBox_priority.Checked:=JSONPropStorage1.ReadBoolean('priority',False);
+    CheckBoxModConf.Checked:=JSONPropStorage1.ReadBoolean('modify',True);
+    ComboBoxChunk.Text:=JSONPropStorage1.ReadString('chunk_size',ComboBoxChunk.Text);
+    ComboBox_meta.ItemIndex:=JSONPropStorage1.ReadInteger('meta',ComboBox_meta.ItemIndex);
+    ComboBox_waitvideo.ItemIndex:=JSONPropStorage1.ReadInteger('wait_video',ComboBox_waitvideo.ItemIndex);
+    ComboBox_waitkey.ItemIndex:=JSONPropStorage1.ReadInteger('wait_key',ComboBox_waitkey.ItemIndex);
+  except
+  end;
+
   CheckBoxModConf.OnClick:=@CheckBoxModConfClick;
   VerboseNginxConfig;
 end;

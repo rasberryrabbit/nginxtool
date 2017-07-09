@@ -10,11 +10,11 @@ object FormNginxtool: TFormNginxtool
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.7'
+  LCLVersion = '1.9.0.0'
   object Panel1: TPanel
     Left = 16
-    Height = 199
-    Top = 128
+    Height = 167
+    Top = 160
     Width = 527
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvLowered
@@ -24,16 +24,16 @@ object FormNginxtool: TFormNginxtool
   object Button1: TButton
     Left = 16
     Height = 25
-    Top = 96
+    Top = 120
     Width = 112
     Caption = '&Start'
     OnClick = Button1Click
     TabOrder = 1
   end
   object Button2: TButton
-    Left = 160
+    Left = 152
     Height = 25
-    Top = 96
+    Top = 120
     Width = 123
     Caption = 'Sto&p'
     OnClick = Button2Click
@@ -41,12 +41,12 @@ object FormNginxtool: TFormNginxtool
   end
   object GroupBox1: TGroupBox
     Left = 8
-    Height = 81
+    Height = 113
     Top = 0
     Width = 536
     Anchors = [akTop, akLeft, akRight]
     Caption = ' Option '
-    ClientHeight = 64
+    ClientHeight = 96
     ClientWidth = 532
     TabOrder = 0
     object CheckBoxModConf: TCheckBox
@@ -57,7 +57,7 @@ object FormNginxtool: TFormNginxtool
       Caption = 'Modify Config File'
       TabOrder = 0
     end
-    object CheckBox1: TCheckBox
+    object CheckBox_priority: TCheckBox
       Left = 10
       Height = 19
       Top = 4
@@ -89,17 +89,96 @@ object FormNginxtool: TFormNginxtool
       TabOrder = 2
       Text = '8192'
     end
+    object ComboBox_meta: TComboBox
+      Left = 56
+      Height = 23
+      Top = 64
+      Width = 60
+      ItemHeight = 15
+      ItemIndex = 2
+      Items.Strings = (
+        'off'
+        'on'
+        'copy'
+      )
+      OnCloseUp = ComboBox_metaCloseUp
+      Style = csDropDownList
+      TabOrder = 3
+      Text = 'copy'
+    end
+    object Label2: TLabel
+      Left = 10
+      Height = 12
+      Top = 68
+      Width = 36
+      Caption = 'meta :'
+      ParentColor = False
+    end
+    object Label3: TLabel
+      Left = 144
+      Height = 12
+      Top = 68
+      Width = 67
+      Caption = 'wait_video :'
+      ParentColor = False
+    end
+    object Label4: TLabel
+      Left = 315
+      Height = 12
+      Top = 69
+      Width = 49
+      Caption = 'wait_key'
+      ParentColor = False
+    end
+  end
+  object ComboBox_waitvideo: TComboBox
+    Left = 228
+    Height = 23
+    Top = 79
+    Width = 60
+    ItemHeight = 15
+    ItemIndex = 0
+    Items.Strings = (
+      'on'
+      'off'
+    )
+    OnCloseUp = ComboBox_waitvideoCloseUp
+    Style = csDropDownList
+    TabOrder = 4
+    Text = 'on'
+  end
+  object ComboBox_waitkey: TComboBox
+    Left = 392
+    Height = 23
+    Top = 79
+    Width = 60
+    ItemHeight = 15
+    ItemIndex = 0
+    Items.Strings = (
+      'on'
+      'off'
+    )
+    OnCloseUp = ComboBox_waitvideoCloseUp
+    Style = csDropDownList
+    TabOrder = 5
+    Text = 'on'
   end
   object UniqueInstance1: TUniqueInstance
     Enabled = True
-    Left = 328
-    Top = 88
+    Left = 312
+    Top = 112
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 500
     OnTimer = Timer1Timer
     Left = 376
-    Top = 88
+    Top = 112
+  end
+  object JSONPropStorage1: TJSONPropStorage
+    StoredValues = <>
+    Formatted = True
+    Left = 464
+    Top = 112
   end
 end
