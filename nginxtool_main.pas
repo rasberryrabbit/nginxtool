@@ -628,6 +628,13 @@ begin
     ComboBox_waitkey.ItemIndex:=JSONPropStorage1.ReadInteger('wait_key',ComboBox_waitkey.ItemIndex);
   except
   end;
+  // store values
+  JSONPropStorage1.WriteBoolean('priority',CheckBox_priority.Checked);
+  JSONPropStorage1.WriteBoolean('modify',CheckBoxModConf.Checked);
+  JSONPropStorage1.WriteString('chunk_size',ComboBoxChunk.Text);
+  JSONPropStorage1.WriteInteger('meta',ComboBox_meta.ItemIndex);
+  JSONPropStorage1.WriteInteger('wait_video',ComboBox_waitvideo.ItemIndex);
+  JSONPropStorage1.WriteInteger('wait_key',ComboBox_waitkey.ItemIndex);
 
   CheckBoxModConf.OnClick:=@CheckBoxModConfClick;
   VerboseNginxConfig;
