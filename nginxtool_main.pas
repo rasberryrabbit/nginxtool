@@ -46,6 +46,7 @@ type
 
   public
     procedure VerboseNginxConfig;
+    function CheckSettingChange:Boolean;
   end;
 
 var
@@ -465,6 +466,23 @@ begin
  loglist.AddLog(Format('> IP Address: %s',[IPBuf]));
 end;
 
+function TFormNginxtool.CheckSettingChange: Boolean;
+begin
+ Result:=False;
+ if not Result then
+   Result:=CheckBox_priority.Checked<>JSONPropStorage1.ReadBoolean('priority',False);
+ if not Result then
+   Result:=CheckBoxModConf.Checked<>JSONPropStorage1.ReadBoolean('modify',True);
+ if not Result then
+   Result:=ComboBoxChunk.Text<>JSONPropStorage1.ReadString('chunk_size',ComboBoxChunk.Text);
+ if not Result then
+   Result:=ComboBox_meta.ItemIndex<>JSONPropStorage1.ReadInteger('meta',ComboBox_meta.ItemIndex);
+ if not Result then
+   Result:=ComboBox_waitvideo.ItemIndex<>JSONPropStorage1.ReadInteger('wait_video',ComboBox_waitvideo.ItemIndex);
+ if not Result then
+   Result:=ComboBox_waitkey.ItemIndex<>JSONPropStorage1.ReadInteger('wait_key',ComboBox_waitkey.ItemIndex);
+end;
+
 procedure TFormNginxtool.FormCreate(Sender: TObject);
 begin
   loglist:=TLogListFPC.Create(Self);
@@ -478,15 +496,17 @@ end;
 
 procedure TFormNginxtool.FormDestroy(Sender: TObject);
 begin
-  JSONPropStorage1.WriteBoolean('priority',CheckBox_priority.Checked);
-  JSONPropStorage1.WriteBoolean('modify',CheckBoxModConf.Checked);
-  JSONPropStorage1.WriteString('chunk_size',ComboBoxChunk.Text);
-  JSONPropStorage1.WriteInteger('meta',ComboBox_meta.ItemIndex);
-  JSONPropStorage1.WriteInteger('wait_video',ComboBox_waitvideo.ItemIndex);
-  JSONPropStorage1.WriteInteger('wait_key',ComboBox_waitkey.ItemIndex);
-  try
-    JSONPropStorage1.Save;
-  except
+  if CheckSettingChange then begin
+    JSONPropStorage1.WriteBoolean('priority',CheckBox_priority.Checked);
+    JSONPropStorage1.WriteBoolean('modify',CheckBoxModConf.Checked);
+    JSONPropStorage1.WriteString('chunk_size',ComboBoxChunk.Text);
+    JSONPropStorage1.WriteInteger('meta',ComboBox_meta.ItemIndex);
+    JSONPropStorage1.WriteInteger('wait_video',ComboBox_waitvideo.ItemIndex);
+    JSONPropStorage1.WriteInteger('wait_key',ComboBox_waitkey.ItemIndex);
+    try
+      JSONPropStorage1.Save;
+    except
+    end;
   end;
 end;
 

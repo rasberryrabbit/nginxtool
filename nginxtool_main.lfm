@@ -117,18 +117,24 @@ object FormNginxtool: TFormNginxtool
     object Label3: TLabel
       Left = 144
       Height = 12
+      Hint = 'It makes some delay.'
       Top = 68
       Width = 67
       Caption = 'wait_video :'
       ParentColor = False
+      ParentShowHint = False
+      ShowHint = True
     end
     object Label4: TLabel
       Left = 315
       Height = 12
+      Hint = 'wait keyframe.'
       Top = 69
       Width = 49
       Caption = 'wait_key'
       ParentColor = False
+      ParentShowHint = False
+      ShowHint = True
     end
   end
   object ComboBox_waitvideo: TComboBox
