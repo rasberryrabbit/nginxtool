@@ -10,12 +10,15 @@
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
     </General>
+    <i18n>
+      <EnableI18N Value="True"/>
+    </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="1"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="60"/>
+      <BuildNr Value="78"/>
       <StringTable ProductVersion="0.0.0.0"/>
     </VersionInfo>
     <BuildModes Count="2">

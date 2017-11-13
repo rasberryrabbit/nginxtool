@@ -55,7 +55,8 @@ var
 implementation
 
 uses
-  {$ifdef WINDOWS}windows,{$endif} loglistfpc, sockets, RegExpr, process {$ifdef WINDOWS}, JwaPsApi{$endif};
+  {$ifdef WINDOWS}windows,{$endif} loglistfpc, sockets, RegExpr, process {$ifdef WINDOWS}, JwaPsApi{$endif},
+  DefaultTranslator;
 
 var
   loglist:TLogListFPC;
