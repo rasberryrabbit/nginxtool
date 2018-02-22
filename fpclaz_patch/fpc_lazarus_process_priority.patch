@@ -1,0 +1,75 @@
+Index: packages/fcl-process/src/process.pp
+===================================================================
+--- packages/fcl-process/src/process.pp	(revision 38309)
++++ packages/fcl-process/src/process.pp	(working copy)
+@@ -35,7 +35,7 @@
+   TStartupOption = (suoUseShowWindow,suoUseSize,suoUsePosition,
+                     suoUseCountChars,suoUseFillAttribute);
+ 
+-  TProcessPriority = (ppHigh,ppIdle,ppNormal,ppRealTime);
++  TProcessPriority = (ppHigh,ppIdle,ppNormal,ppRealTime,ppBelowNormal,ppAboveNormal);
+ 
+   TProcessOptions = set of TProcessOption;
+   TStartupOptions = set of TStartupOption;
+Index: packages/fcl-process/src/unix/process.inc
+===================================================================
+--- packages/fcl-process/src/unix/process.inc	(revision 38309)
++++ packages/fcl-process/src/unix/process.inc	(working copy)
+@@ -27,7 +27,7 @@
+ 
+ Const
+   PriorityConstants : Array [TProcessPriority] of Integer =
+-                      (20,20,0,-20);
++                      (-10,19,0,-20,5,-5);
+ 
+ Const
+   GeometryOption : String = '-geometry';
+Index: packages/fcl-process/src/win/process.inc
+===================================================================
+--- packages/fcl-process/src/win/process.inc	(revision 38309)
++++ packages/fcl-process/src/win/process.inc	(working copy)
+@@ -25,7 +25,8 @@
+ Const
+   PriorityConstants : Array [TProcessPriority] of Cardinal =
+                       (HIGH_PRIORITY_CLASS,IDLE_PRIORITY_CLASS,
+-                       NORMAL_PRIORITY_CLASS,REALTIME_PRIORITY_CLASS);
++                       NORMAL_PRIORITY_CLASS,REALTIME_PRIORITY_CLASS,
++                       BELOW_NORMAL_PRIORITY_CLASS,ABOVE_NORMAL_PRIORITY_CLASS);
+ 
+ procedure TProcess.CloseProcessHandles;
+ begin
+Index: packages/fcl-process/src/wince/process.inc
+===================================================================
+--- packages/fcl-process/src/wince/process.inc	(revision 38309)
++++ packages/fcl-process/src/wince/process.inc	(working copy)
+@@ -25,7 +25,8 @@
+ Const
+   PriorityConstants : Array [TProcessPriority] of Cardinal =
+                       (HIGH_PRIORITY_CLASS,IDLE_PRIORITY_CLASS,
+-                       NORMAL_PRIORITY_CLASS,REALTIME_PRIORITY_CLASS);
++                       NORMAL_PRIORITY_CLASS,REALTIME_PRIORITY_CLASS,
++                       BELOW_NORMAL_PRIORITY_CLASS,ABOVE_NORMAL_PRIORITY_CLASS);
+ 
+ procedure TProcess.CloseProcessHandles;
+ begin
+Index: rtl/win/wininc/defines.inc
+===================================================================
+--- rtl/win/wininc/defines.inc	(revision 38309)
++++ rtl/win/wininc/defines.inc	(working copy)
+@@ -660,6 +660,8 @@
+      IDLE_PRIORITY_CLASS = 64;
+      NORMAL_PRIORITY_CLASS = 32;
+      REALTIME_PRIORITY_CLASS = 256;
++     BELOW_NORMAL_PRIORITY_CLASS = $00004000;
++     ABOVE_NORMAL_PRIORITY_CLASS = $00008000;
+   { CreateService  }
+      SERVICE_ALL_ACCESS = $f01ff;
+      SERVICE_CHANGE_CONFIG = 2;
+@@ -2411,6 +2413,7 @@
+      REG_RESOURCE_LIST = 8;
+      REG_RESOURCE_REQUIREMENTS_LIST = 10;
+      REG_SZ = 1;
++     REG_QWORD = 11;
+   { RegisterHotKey  }
+      MOD_ALT = 1;
+      MOD_CONTROL = 2;
