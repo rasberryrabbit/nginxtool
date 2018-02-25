@@ -622,7 +622,7 @@ begin
   try
     JSONPropStorage1.Restore;
     CheckBox_priority.Checked:=JSONPropStorage1.ReadBoolean('priority',False);
-    CheckBoxModConf.Checked:=JSONPropStorage1.ReadBoolean('modify',True);
+    CheckBoxModConf.Checked:=JSONPropStorage1.ReadBoolean('modify',False);
     ComboBoxChunk.Text:=JSONPropStorage1.ReadString('chunk_size',ComboBoxChunk.Text);
     ComboBox_meta.ItemIndex:=JSONPropStorage1.ReadInteger('meta',ComboBox_meta.ItemIndex);
     ComboBox_waitvideo.ItemIndex:=JSONPropStorage1.ReadInteger('wait_video',ComboBox_waitvideo.ItemIndex);
