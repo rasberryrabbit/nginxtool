@@ -17,6 +17,7 @@ type
     Button2: TButton;
     CheckBox_priority: TCheckBox;
     CheckBoxModConf: TCheckBox;
+    ComboBox_Record: TComboBox;
     ComboBox_meta: TComboBox;
     ComboBoxChunk: TComboBox;
     ComboBox_waitvideo: TComboBox;
@@ -27,6 +28,7 @@ type
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
     Panel1: TPanel;
     Timer1: TTimer;
     UniqueInstance1: TUniqueInstance;
@@ -40,7 +42,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure Panel1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
 
@@ -201,10 +202,6 @@ end;
 
 { TFormNginxtool }
 
-procedure TFormNginxtool.Panel1Click(Sender: TObject);
-begin
-
-end;
 
 procedure TFormNginxtool.Timer1Timer(Sender: TObject);
 begin
@@ -381,6 +378,57 @@ begin
        loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
    end;
 
+   // record [off|all|audio|video|keyframes|manual]
+   if itemgrp<>nil then begin
+     item:=itemgrp.FindItemName('record');
+     if CheckBoxModConf.Checked then begin
+       if item<>nil then begin
+         if item.Value<>ComboBox_Record.Text+';' then begin
+           item.Value:=ComboBox_Record.Text+';';
+           chunk_modified:=True;
+         end;
+       end else begin
+         if itemgrp<>nil then begin
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record',ComboBox_Record.Text+';');
+           chunk_modified:=True;
+         end;
+       end;
+     end;
+     if item<>nil then
+       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+   end;
+
+   // record path
+   if itemgrp<>nil then begin
+     item:=itemgrp.FindItemName('record_path');
+     if CheckBoxModConf.Checked then begin
+       if item=nil then begin
+         if itemgrp<>nil then begin
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record_path',GetUserDir+';');
+           chunk_modified:=True;
+         end;
+       end;
+     end;
+     if item<>nil then
+       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+   end;
+
+   // record_max_size 128;
+   if itemgrp<>nil then begin
+     item:=itemgrp.FindItemName('record_max_size');
+     if CheckBoxModConf.Checked then begin
+       if item=nil then begin
+         if itemgrp<>nil then begin
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record_max_size','600M;');
+           chunk_modified:=True;
+         end;
+       end;
+     end;
+     if item<>nil then
+       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+   end;
+
+
    if chunk_modified then begin
      try
        configpar.Save('conf/nginx.conf');
@@ -425,6 +473,8 @@ begin
    Result:=ComboBox_waitvideo.ItemIndex<>JSONPropStorage1.ReadInteger('wait_video',ComboBox_waitvideo.ItemIndex);
  if not Result then
    Result:=ComboBox_waitkey.ItemIndex<>JSONPropStorage1.ReadInteger('wait_key',ComboBox_waitkey.ItemIndex);
+ if not Result then
+   Result:=ComboBox_Record.Text<>JSONPropStorage1.ReadString('record',ComboBox_Record.Text);
 end;
 
 procedure TFormNginxtool.FormCreate(Sender: TObject);
@@ -447,6 +497,7 @@ begin
     JSONPropStorage1.WriteInteger('meta',ComboBox_meta.ItemIndex);
     JSONPropStorage1.WriteInteger('wait_video',ComboBox_waitvideo.ItemIndex);
     JSONPropStorage1.WriteInteger('wait_key',ComboBox_waitkey.ItemIndex);
+    JSONPropStorage1.WriteString('record',ComboBox_Record.Text);
     try
       JSONPropStorage1.Save;
     except
@@ -570,6 +621,7 @@ begin
     ComboBox_meta.ItemIndex:=JSONPropStorage1.ReadInteger('meta',ComboBox_meta.ItemIndex);
     ComboBox_waitvideo.ItemIndex:=JSONPropStorage1.ReadInteger('wait_video',ComboBox_waitvideo.ItemIndex);
     ComboBox_waitkey.ItemIndex:=JSONPropStorage1.ReadInteger('wait_key',ComboBox_waitkey.ItemIndex);
+    ComboBox_Record.Text:=JSONPropStorage1.ReadString('record',ComboBox_Record.Text);
   except
   end;
   // store values
@@ -579,11 +631,13 @@ begin
   JSONPropStorage1.WriteInteger('meta',ComboBox_meta.ItemIndex);
   JSONPropStorage1.WriteInteger('wait_video',ComboBox_waitvideo.ItemIndex);
   JSONPropStorage1.WriteInteger('wait_key',ComboBox_waitkey.ItemIndex);
+  JSONPropStorage1.WriteString('record',ComboBox_Record.Text);
 
   CheckBoxModConf.OnClick:=@CheckBoxModConfClick;
   VerboseNginxConfig;
 
 end;
+
 
 {$ifdef WINDOWS}
 function CheckWinVer:Boolean;

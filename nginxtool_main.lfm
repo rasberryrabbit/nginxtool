@@ -19,7 +19,6 @@ object FormNginxtool: TFormNginxtool
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvLowered
     TabOrder = 3
-    OnClick = Panel1Click
   end
   object Button1: TButton
     Left = 16
@@ -103,7 +102,7 @@ object FormNginxtool: TFormNginxtool
       )
       OnCloseUp = ComboBox_metaCloseUp
       Style = csDropDownList
-      TabOrder = 3
+      TabOrder = 4
       Text = 'copy'
     end
     object Label2: TLabel
@@ -135,6 +134,28 @@ object FormNginxtool: TFormNginxtool
       ParentColor = False
       ParentShowHint = False
       ShowHint = True
+    end
+    object ComboBox_Record: TComboBox
+      Left = 352
+      Height = 20
+      Top = 30
+      Width = 100
+      ItemHeight = 12
+      ItemIndex = 0
+      Items.Strings = (
+        'off'
+        'all'
+      )
+      TabOrder = 3
+      Text = 'off'
+    end
+    object Label5: TLabel
+      Left = 290
+      Height = 12
+      Top = 36
+      Width = 40
+      Caption = 'Record'
+      ParentColor = False
     end
   end
   object ComboBox_waitvideo: TComboBox

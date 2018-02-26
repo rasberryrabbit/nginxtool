@@ -29,6 +29,10 @@ msgstr ""
 msgid "copy"
 msgstr ""
 
+#: tformnginxtool.combobox_record.text
+msgid "off"
+msgstr ""
+
 #: tformnginxtool.combobox_waitkey.text
 msgctxt "tformnginxtool.combobox_waitkey.text"
 msgid "on"
@@ -65,5 +69,9 @@ msgstr ""
 
 #: tformnginxtool.label4.hint
 msgid "wait keyframe."
+msgstr ""
+
+#: tformnginxtool.label5.caption
+msgid "Record"
 msgstr ""
 
