@@ -301,13 +301,16 @@ begin
    if itemgrp<>nil then
      item:=itemgrp.FindItemName('chunk_size');
    if CheckBoxModConf.Checked then begin
-     chunk_modified:=True;
      if item<>nil then begin
-       item.Value:=schunksize+';';
+       if Item.Value<>schunksize+';' then begin
+         item.Value:=schunksize+';';
+         chunk_modified:=True;
+       end;
      end else
      begin
        if itemgrp<>nil then begin
          item:=itemgrp.InsertNameValue(0,itemgrp.Level,'chunk_size',schunksize+';');
+         chunk_modified:=True;
        end;
      end;
    end;
@@ -323,12 +326,15 @@ begin
    if itemgrp<>nil then
      item:=itemgrp.FindItemName('meta');
    if CheckBoxModConf.Checked then begin
-     chunk_modified:=True;
      if item<>nil then begin
-       item.Value:=ComboBox_meta.Text+';';
+       if item.Value<>ComboBox_meta.Text+';' then begin
+         item.Value:=ComboBox_meta.Text+';';
+         chunk_modified:=True;
+       end;
      end else begin
        if itemgrp<>nil then begin
          item:=itemgrp.InsertNameValue(0,itemgrp.Level,'meta',ComboBox_meta.Text+';');
+         chunk_modified:=True;
        end;
      end;
    end;
@@ -339,12 +345,15 @@ begin
    if itemgrp<>nil then begin
      item:=itemgrp.FindItemName('wait_video');
      if CheckBoxModConf.Checked then begin
-       chunk_modified:=True;
        if item<>nil then begin
-         item.Value:=ComboBox_waitvideo.Text+';';
+         if item.Value<>ComboBox_waitvideo.Text+';' then begin
+           item.Value:=ComboBox_waitvideo.Text+';';
+           chunk_modified:=True;
+         end;
        end else begin
          if itemgrp<>nil then begin
            item:=itemgrp.InsertNameValue(0,itemgrp.Level,'wait_video',ComboBox_waitvideo.Text+';');
+           chunk_modified:=True;
          end;
        end;
      end;
@@ -356,12 +365,15 @@ begin
    if itemgrp<>nil then begin
      item:=itemgrp.FindItemName('wait_key');
      if CheckBoxModConf.Checked then begin
-       chunk_modified:=True;
        if item<>nil then begin
-         item.Value:=ComboBox_waitkey.Text+';';
+         if item.Value<>ComboBox_waitkey.Text+';' then begin
+           item.Value:=ComboBox_waitkey.Text+';';
+           chunk_modified:=True;
+         end;
        end else begin
          if itemgrp<>nil then begin
            item:=itemgrp.InsertNameValue(0,itemgrp.Level,'wait_key',ComboBox_waitkey.Text+';');
+           chunk_modified:=True;
          end;
        end;
      end;
