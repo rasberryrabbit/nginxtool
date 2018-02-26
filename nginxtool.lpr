@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, nginxtool_main, uniqueinstance_package
+  Forms, nginxtool_main, uniqueinstance_package, uConfigParser
   { you can add units after this };
 
 {$R *.res}

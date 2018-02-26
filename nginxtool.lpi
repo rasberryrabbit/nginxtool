@@ -18,7 +18,7 @@
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="1"/>
       <RevisionNr Value="2"/>
-      <BuildNr Value="89"/>
+      <BuildNr Value="91"/>
       <StringTable ProductVersion="0.0.0.0"/>
     </VersionInfo>
     <BuildModes Count="2">
@@ -64,7 +64,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="nginxtool.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -76,6 +76,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="uconfigparser.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="uConfigParser"/>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

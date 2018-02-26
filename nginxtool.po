@@ -1,0 +1,69 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: tformnginxtool.button1.caption
+msgid "&Start"
+msgstr ""
+
+#: tformnginxtool.button2.caption
+msgid "Sto&p"
+msgstr ""
+
+#: tformnginxtool.caption
+msgid "nginx rtmp tool"
+msgstr ""
+
+#: tformnginxtool.checkboxmodconf.caption
+msgid "Modify Config File"
+msgstr ""
+
+#: tformnginxtool.checkbox_priority.caption
+msgid "Above Normal Priority"
+msgstr ""
+
+#: tformnginxtool.comboboxchunk.text
+msgid "8192"
+msgstr ""
+
+#: tformnginxtool.combobox_meta.text
+msgid "copy"
+msgstr ""
+
+#: tformnginxtool.combobox_waitkey.text
+msgctxt "tformnginxtool.combobox_waitkey.text"
+msgid "on"
+msgstr ""
+
+#: tformnginxtool.combobox_waitvideo.text
+msgctxt "tformnginxtool.combobox_waitvideo.text"
+msgid "on"
+msgstr ""
+
+#: tformnginxtool.groupbox1.caption
+msgid " Option "
+msgstr ""
+
+#: tformnginxtool.label1.caption
+msgid "Chunk Size :"
+msgstr ""
+
+#: tformnginxtool.label2.caption
+msgid "meta :"
+msgstr ""
+
+#: tformnginxtool.label3.caption
+msgid "wait_video :"
+msgstr ""
+
+#: tformnginxtool.label3.hint
+msgid "It makes some delay."
+msgstr ""
+
+#: tformnginxtool.label4.caption
+msgid "wait_key"
+msgstr ""
+
+#: tformnginxtool.label4.hint
+msgid "wait keyframe."
+msgstr ""
+

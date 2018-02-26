@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, JSONPropStorage, UniqueInstance;
+  StdCtrls, JSONPropStorage, UniqueInstance, uConfigParser;
 
 type
 
@@ -47,6 +47,7 @@ type
   public
     procedure VerboseNginxConfig;
     function CheckSettingChange:Boolean;
+
   end;
 
 var
@@ -239,14 +240,15 @@ end;
 
 procedure TFormNginxtool.VerboseNginxConfig;
 var
- buf, bufrtmp, schunksize, sRtmpMeta : string;
- fs : TFileStream;
- bufsize, bufloc, bufpos, bufopen, rtmpidx, ii, ij : Integer;
- rx, rxrtmp : TRegExpr;
- templist : TStringList;
- workercount, chunksize : Integer;
- has_autopush, chunk_modified : Boolean;
+ schunksize : string;
+ workercount : Integer;
+ chunk_modified : Boolean;
  IPBuf:array[0..254] of char;
+
+ configpar:TNginxConfigParser;
+ item:TNginxItem;
+ itemgrp:TNginxItemGroup;
+ itemidx:Integer;
 begin
  chunk_modified:=False;
  loglist.AddLog('----- nginx config -----');
@@ -255,214 +257,143 @@ begin
    schunksize:='4096';
    ComboBoxChunk.Text:=schunksize;
  end;
+
+ configpar:=TNginxConfigParser.Create;
  try
-   // read config file
-   fs := TFileStream.Create('conf/nginx.conf',fmOpenRead or fmShareDenyNone);
-   try
-     bufsize := fs.Size;
-     if bufsize>131072 then
-        bufsize:=131072;
-     SetLength(buf,bufsize);
-     fs.Read(buf[1],bufsize);
-   finally
-     fs.Free;
-   end;
- except
-   buf:='';
- end;
-   // check 'worker_processes 1;'
-   rx := TRegExpr.Create('worker_processes\s+(\d+)\;');
-   try
-     rx.ModifierI:=True;
-     if rx.Exec(buf) then begin
-       workercount:=StrToIntDef(rx.Match[1],0);
-       if CheckBoxModConf.Checked then begin
-         if workercount<>1 then begin
-           buf:=Copy(buf,1,rx.MatchPos[1]-1)+'1'+
-                Copy(buf,rx.MatchPos[1]+rx.MatchLen[1]);
-           chunk_modified:=True;
-           loglist.AddLog('worker_processes 1;');
-         end;
-       end;
-       if (not CheckBoxModConf.Checked) or (workercount=1) then
-         loglist.AddLog(rx.Match[0]);
-     end else begin
-       workercount:=0;
-       if CheckBoxModConf.Checked then begin
-         buf:= 'worker_processes 1;'#10+buf;
+   configpar.Load('conf/nginx.conf');
+
+   // check 'worker_process 1;'
+   item:=configpar.ItemList.FindItemName('worker_processes');
+   if item<>nil then begin
+     workercount:=StrToIntDef(Copy(item.Value,1,Length(item.Value)-1),0);
+     if CheckBoxModConf.Checked then
+       if workercount<>1 then begin
+         item.Value:='1;';
          chunk_modified:=True;
-         loglist.AddLog('worker_processes 1;');
+         workercount:=1;
        end;
+   end else
+   begin
+     workercount:=1;
+     if CheckBoxModConf.Checked then begin
+       item:=configpar.ItemList.InsertNameValue(0,0,'worker_processes','1;');
+       chunk_modified:=True;
      end;
-   finally
-     rx.Free;
    end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
    // check 'rtmp_auto_push on;'
-   rx := TRegExpr.Create('rtmp_auto_push\s+([a-zA-Z]+)\;');
-   try
-     rx.ModifierI:=True;
-     has_autopush:=False;
-     if rx.Exec(buf) then begin
-       has_autopush:=UpperCase(rx.Match[1])='ON';
-       if CheckBoxModConf.Checked then begin
-         //if not has_autopush then begin
-           buf:=rx.Replace(buf,'',False);
-         chunk_modified:=True;
-         loglist.AddLog('rtmp_auto_push removed');
-       end else
-         loglist.AddLog(rx.Match[0]);
-     end;
-   finally
-     rx.Free;
+   item:=configpar.ItemList.FindItemName('rtmp_auto_push');
+   if item<>nil then begin
+     if CheckBoxModConf.Checked then begin
+       configpar.ItemList.DeleteItem(item);
+       chunk_modified:=True;
+       loglist.AddLog('rtmp_auto_push removed');
+     end else
+       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
    end;
- if CheckBoxModConf.Checked then begin
+
    // check 'chunk_size 8192;'
-   rx := TRegExpr.Create('rtmp\s+\{.+server\s+\{.+chunk_size\s+(\d+)\;');
-   try
-     rx.ModifierI:=True;
-     if rx.Exec(buf) then begin
-       if StrToIntDef(rx.Match[1],0)<>0 then begin
-         buf:=Copy(buf,1,rx.MatchPos[1]-1)+schunksize+Copy(buf,rx.MatchPos[1]+rx.MatchLen[1]);
-         chunk_modified:=True;
-       end;
-     end else begin
-       rxrtmp:=TRegExpr.Create('rtmp\s+\{[^\{]+server\s+\{\s+[^;]+;');
-       try
-         rxrtmp.ModifierI:=True;
-         if rxrtmp.Exec(buf) then begin
-           buf:=Copy(buf,1,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]-1)+#10#9#9'chunk_size '+schunksize+';'#10+
-                Copy(buf,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]);
-           chunk_modified:=True;
-         end;
-       finally
-         rxrtmp.Free;
+   itemgrp:=configpar.ItemList.FindItemGroup('rtmp');
+   if itemgrp<>nil then
+     itemgrp:=itemgrp.FindItemGroup('server');
+   if itemgrp<>nil then
+     item:=itemgrp.FindItemName('chunk_size');
+   if CheckBoxModConf.Checked then begin
+     chunk_modified:=True;
+     if item<>nil then begin
+       item.Value:=schunksize+';';
+     end else
+     begin
+       if itemgrp<>nil then begin
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level,'chunk_size',schunksize+';');
        end;
      end;
-   finally
-     rx.Free;
    end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
    // insert meta copy
-   rx := TRegExpr.Create('meta\s+[^;]+;');
-   try
-     rx.ModifierI:=True;
-     if rx.Exec(buf) then begin
-       buf:=rx.Replace(buf,'meta '+ComboBox_meta.Text+';',False);
-       chunk_modified:=True;
-     end else begin
-         rxrtmp:=TRegExpr.Create('rtmp\s+\{[^\{]+server\s+\{\s+[^\{]+application\s+(\S+)\s+\{');
-         try
-           if rxrtmp.Exec(buf) then begin
-             buf:=Copy(buf,1,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]-1)+#10#9#9#9'meta '+ComboBox_meta.Text+';'#10+
-                  Copy(buf,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]);
-             chunk_modified:=True;
-           end;
-         finally
-           rxrtmp.Free;
-         end;
-       end;
-   finally
-     rx.Free;
-   end;
-   // wait_video
-   rx := TRegExpr.Create('wait_video\s+[^;]+;');
-   try
-     rx.ModifierI:=True;
-     if rx.Exec(buf) then begin
-       buf:=rx.Replace(buf,'wait_video '+ComboBox_waitvideo.Text+';',False);
-       chunk_modified:=True;
-     end else begin
-         rxrtmp:=TRegExpr.Create('rtmp\s+\{[^\{]+server\s+\{\s+[^\{]+application\s+(\S+)\s+\{');
-         try
-           if rxrtmp.Exec(buf) then begin
-             buf:=Copy(buf,1,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]-1)+#10#9#9#9'wait_video '+ComboBox_waitvideo.Text+';'#10+
-                  Copy(buf,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]);
-             chunk_modified:=True;
-           end;
-         finally
-           rxrtmp.Free;
-         end;
-       end;
-   finally
-     rx.Free;
-   end;
-   // wait_key
-   rx := TRegExpr.Create('wait_key\s+[^;]+;');
-   try
-     rx.ModifierI:=True;
-     if rx.Exec(buf) then begin
-       buf:=rx.Replace(buf,'wait_key '+ComboBox_waitkey.Text+';',False);
-       chunk_modified:=True;
-     end else begin
-         rxrtmp:=TRegExpr.Create('rtmp\s+\{[^\{]+server\s+\{\s+[^\{]+application\s+(\S+)\s+\{');
-         try
-           if rxrtmp.Exec(buf) then begin
-             buf:=Copy(buf,1,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]-1)+#10#9#9#9'wait_key '+ComboBox_waitkey.Text+';'#10+
-                  Copy(buf,rxrtmp.MatchPos[0]+rxrtmp.MatchLen[0]);
-             chunk_modified:=True;
-           end;
-         finally
-           rxrtmp.Free;
-         end;
-       end;
-   finally
-     rx.Free;
-   end;
-   (*
-   // add 'rtmp_auto_push on'
-   if (workercount<>1) and (not has_autopush) then begin
-     buf:='rtmp_auto_push on;'#10+buf;
+   itemgrp:=configpar.ItemList.FindItemGroup('rtmp');
+   if itemgrp<>nil then
+     itemgrp:=itemgrp.FindItemGroup('server');
+   if itemgrp<>nil then
+     itemgrp:=itemgrp.FindItemGroup('application');
+   if itemgrp<>nil then
+     item:=itemgrp.FindItemName('meta');
+   if CheckBoxModConf.Checked then begin
      chunk_modified:=True;
-     loglist.AddLog('rtmp_auto_push on; added');
+     if item<>nil then begin
+       item.Value:=ComboBox_meta.Text+';';
+     end else begin
+       if itemgrp<>nil then begin
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level,'meta',ComboBox_meta.Text+';');
+       end;
+     end;
    end;
-   *)
-   // update nginx.conf
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
+   // wait_video
+   if itemgrp<>nil then begin
+     item:=itemgrp.FindItemName('wait_video');
+     if CheckBoxModConf.Checked then begin
+       chunk_modified:=True;
+       if item<>nil then begin
+         item.Value:=ComboBox_waitvideo.Text+';';
+       end else begin
+         if itemgrp<>nil then begin
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'wait_video',ComboBox_waitvideo.Text+';');
+         end;
+       end;
+     end;
+     if item<>nil then
+       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+   end;
+
+   // wait_key
+   if itemgrp<>nil then begin
+     item:=itemgrp.FindItemName('wait_key');
+     if CheckBoxModConf.Checked then begin
+       chunk_modified:=True;
+       if item<>nil then begin
+         item.Value:=ComboBox_waitkey.Text+';';
+       end else begin
+         if itemgrp<>nil then begin
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'wait_key',ComboBox_waitkey.Text+';');
+         end;
+       end;
+     end;
+     if item<>nil then
+       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+   end;
+
    if chunk_modified then begin
      try
-       fs:=TFileStream.Create('conf/nginx.conf',fmOpenReadWrite or fmShareDenyNone);
-       try
-         fs.Write(buf[1],Length(buf));
-       finally
-         fs.Free;
-       end;
+       configpar.Save('conf/nginx.conf');
      except
        on e:exception do begin
          loglist.AddLog('Fail to write file "conf/nginx.conf"');
        end;
      end;
    end;
- end;
- // parse config file
- rx := TRegExpr.Create('rtmp\s+\{');
- try
-   rx.ModifierI:=true;
-   if rx.Exec(buf) then begin
-     bufloc := rx.MatchPos[0];
-     bufpos := rx.MatchPos[0]+rx.MatchLen[0];
-     bufopen:=1;
-     while bufopen>0 do begin
-       if buf[bufpos]='{' then
-          Inc(bufopen)
-          else if buf[bufpos]='}' then
-               dec(bufopen);
-       Inc(bufpos);
-       if bufpos>bufsize then
-          break;
-     end;
-     templist:=TStringList.Create;
-     try
-       bufrtmp:=Copy(buf,bufloc,bufpos-bufloc);
-       bufrtmp:=StringReplace(bufrtmp,#9,#32#32#32#32,[rfReplaceAll]);
-       templist.Text:=bufrtmp;
-       for bufpos:=0 to templist.Count-1 do begin
-         loglist.AddLog(templist.Strings[bufpos]);
+
+   // show push values
+   if itemgrp<>nil then begin
+     item:=itemgrp.FindItemName('push');
+     repeat
+       if item<>nil then begin
+         loglist.AddLog(Format('%s %s',[item.NameItem,item.Value{Copy(item.Value,1,40)+'...'}]));
+         item:=itemgrp.FindItemNameNext(item,'push');
        end;
-     finally
-       templist.Free;
-     end;
+     until item=nil;
    end;
+
  finally
-   rx.Free;
+   configpar.Free;
  end;
+
  GetIPAddr(IPBuf,sizeof(IPBuf));
  loglist.AddLog(Format('> IP Address: %s',[IPBuf]));
 end;
@@ -639,6 +570,7 @@ begin
 
   CheckBoxModConf.OnClick:=@CheckBoxModConfClick;
   VerboseNginxConfig;
+
 end;
 
 {$ifdef WINDOWS}
