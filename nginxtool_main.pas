@@ -404,7 +404,7 @@ begin
      if CheckBoxModConf.Checked then begin
        if item=nil then begin
          if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record_path',GetUserDir+';');
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record_path',pchar(GetUserDir)+';');
            chunk_modified:=True;
          end;
        end;
@@ -420,6 +420,21 @@ begin
        if item=nil then begin
          if itemgrp<>nil then begin
            item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record_max_size','600M;');
+           chunk_modified:=True;
+         end;
+       end;
+     end;
+     if item<>nil then
+       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+   end;
+
+   // record_suffix .flv;
+   if itemgrp<>nil then begin
+     item:=itemgrp.FindItemName('record_suffix');
+     if CheckBoxModConf.Checked then begin
+       if item=nil then begin
+         if itemgrp<>nil then begin
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record_suffix','-%y-%m-%d-%H-%M-%S.flv;');
            chunk_modified:=True;
          end;
        end;

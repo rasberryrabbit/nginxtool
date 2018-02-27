@@ -137,14 +137,16 @@ object FormNginxtool: TFormNginxtool
     end
     object ComboBox_Record: TComboBox
       Left = 352
-      Height = 20
+      Height = 23
       Top = 30
       Width = 100
-      ItemHeight = 12
+      ItemHeight = 15
       ItemIndex = 0
       Items.Strings = (
         'off'
         'all'
+        'video'
+        'audio'
       )
       TabOrder = 3
       Text = 'off'
