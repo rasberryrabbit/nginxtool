@@ -269,11 +269,12 @@ begin
   end;
 end;
 
+// utf8
 procedure TNginxConfigParser.Load(FileName: string);
 var
   fsFile:TFileStream;
 begin
-  fsFile:=TFileStream.Create(FileName,fmOpenRead);
+  fsFile:=TFileStream.Create(UTF8Decode(FileName),fmOpenRead);
   try
     LoadFromStream(fsFile);
   finally
@@ -291,11 +292,12 @@ begin
   IterGroupSave(temp);
 end;
 
+// utf8
 procedure TNginxConfigParser.Save(FileName: string);
 var
   fsFile:TFileStream;
 begin
-  fsFile:=TFileStream.Create(FileName,fmCreate or fmOpenWrite);
+  fsFile:=TFileStream.Create(UTF8Decode(FileName),fmCreate or fmOpenWrite);
   try
     SaveToStream(fsFile);
   finally
