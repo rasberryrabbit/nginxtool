@@ -273,7 +273,7 @@ begin
    begin
      workercount:=1;
      if CheckBoxModConf.Checked then begin
-       item:=configpar.ItemList.InsertNameValue(0,0,'worker_processes','1;');
+       item:=configpar.ItemList.InsertNameValue(0,1,'worker_processes','1;');
        chunk_modified:=True;
      end;
    end;
@@ -306,7 +306,7 @@ begin
      end else
      begin
        if itemgrp<>nil then begin
-         item:=itemgrp.InsertNameValue(0,itemgrp.Level,'chunk_size',schunksize+';');
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'chunk_size',schunksize+';');
          chunk_modified:=True;
        end;
      end;
@@ -330,7 +330,7 @@ begin
        end;
      end else begin
        if itemgrp<>nil then begin
-         item:=itemgrp.InsertNameValue(0,itemgrp.Level,'meta',ComboBox_meta.Text+';');
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'meta',ComboBox_meta.Text+';');
          chunk_modified:=True;
        end;
      end;
@@ -349,7 +349,7 @@ begin
          end;
        end else begin
          if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'wait_video',ComboBox_waitvideo.Text+';');
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'wait_video',ComboBox_waitvideo.Text+';');
            chunk_modified:=True;
          end;
        end;
@@ -369,7 +369,7 @@ begin
          end;
        end else begin
          if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'wait_key',ComboBox_waitkey.Text+';');
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'wait_key',ComboBox_waitkey.Text+';');
            chunk_modified:=True;
          end;
        end;
@@ -389,7 +389,7 @@ begin
          end;
        end else begin
          if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record',ComboBox_Record.Text+';');
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record',ComboBox_Record.Text+';');
            chunk_modified:=True;
          end;
        end;
@@ -404,7 +404,7 @@ begin
      if CheckBoxModConf.Checked then begin
        if item=nil then begin
          if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record_path',pchar(GetUserDir)+';');
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_path',pchar(GetUserDir)+';');
            chunk_modified:=True;
          end;
        end;
@@ -419,7 +419,7 @@ begin
      if CheckBoxModConf.Checked then begin
        if item=nil then begin
          if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record_max_size','600M;');
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_max_size','600M;');
            chunk_modified:=True;
          end;
        end;
@@ -434,7 +434,7 @@ begin
      if CheckBoxModConf.Checked then begin
        if item=nil then begin
          if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level,'record_suffix','-%y-%m-%d-%H-%M-%S.flv;');
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_suffix','-%y-%m-%d-%H-%M-%S.flv;');
            chunk_modified:=True;
          end;
        end;

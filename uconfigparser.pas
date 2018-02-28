@@ -68,6 +68,7 @@ type
       function AddNameValue(lvl: Integer; const sName, sValue: string): Integer;
       function InsertNameValue(Idx, lvl: Integer; const sName, sValue: string): TNginxItem;
       function AddNameGroup(lvl: Integer; const sName, sValue: string): Integer;
+      function InsertNameGroup(Idx, lvl: Integer; const sName, sValue: string): TNginxItemGroup;
 
       function FindItemName(const str: string): TNginxItem;
       function FindItemNameNext(BaseItem:TNginxItem; const str: string): TNginxItem;
@@ -120,7 +121,6 @@ implementation
 
 uses
   strutils;
-
 
 { TNginxConfigParser }
 
@@ -367,6 +367,24 @@ begin
     temp.Value:=sValue;
     temp.Parents:=self;
     Result:=FItemList.Add(temp);
+  except
+    temp.Free;
+  end;
+end;
+
+function TNginxItemGroup.InsertNameGroup(Idx, lvl: Integer; const sName,
+  sValue: string): TNginxItemGroup;
+var
+  temp:TNginxItemGroup;
+begin
+  Result:=nil;
+  temp:=TNginxItemGroup.Create;
+  try
+    temp.Level:=lvl;
+    temp.NameItem:=sName;
+    temp.Value:=sValue;
+    FItemList.Insert(Idx,temp);
+    Result:=temp;
   except
     temp.Free;
   end;
