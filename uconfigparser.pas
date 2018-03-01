@@ -150,17 +150,20 @@ begin
   while FBufIdx<FBufLen do begin
     ch:=FBuffer[FBufIdx];
     if not bComm then begin
+      { break on delimiter or space }
       if (ch<=#32) or
          ((ch = ';') and (Result<>'')) or
          ((ch = '{') and (Result<>''))
       then
         break;
+      { check comment }
       if ch='#' then begin
         bComm:=True;
         if Result<>'' then
           break;
       end;
     end else
+      { read end of line }
       if ch in [#10,#13] then
         break;
     Result:=Result+ch;
@@ -210,8 +213,6 @@ begin
 end;
 
 constructor TNginxConfigParser.Create;
-var
-  temp:TNginxItemGroup;
 begin
   inherited Create;
   FBufIdx:=0;
@@ -244,12 +245,14 @@ begin
     sName:=ReadToken;
     sValue:='';
     if (sName<>'}') and ((sName<>'') and (sName[1]<>'#')) then begin
+      { read all values }
       repeat
         sTemp:=ReadToken;
         if (sValue<>'') and (sTemp<>';') then
           sValue:=sValue+' ';
         sValue:=sValue+sTemp;
       until (sTemp=';') or (sTemp='{');
+      { add group or item }
       if stemp='{' then begin
         iCurr:=temp.AddNameGroup(iLVL,sName,sValue);
         temp:=TNginxItemGroup(temp.ItemList[iCurr]);
@@ -258,6 +261,7 @@ begin
         iCurr:=temp.AddNameValue(iLVL,sName,sValue);
     end else begin
       iCurr:=temp.AddNameValue(iLVL,sName,sValue);
+      { group end bracket }
       if sName='}' then begin
         if temp.Parents<>nil then
           temp:=temp.Parents;
