@@ -117,10 +117,43 @@ type
       property ItemList:TNginxItemGroup read FItem;
   end;
 
+
+function NginxRemoveTrailValue(const s:string):string;
+
 implementation
 
 uses
   strutils;
+
+
+function NginxRemoveTrailValue(const s:string):string;
+var
+  i, l, fspace:Integer;
+  ch : char;
+begin
+  Result:='';
+  i:=Length(s);
+  l:=i;
+  fspace:=0;
+  while i>0 do begin
+    ch := s[i];
+    if fspace>0 then begin
+        if ch=';' then begin
+          Dec(i);
+          break;
+        end;
+    end else begin
+      if ch>#32 then begin
+        fspace:=i;
+        Inc(i);
+      end;
+    end;
+    Dec(i);
+  end;
+  if i<=0 then
+    i:=l;
+  Result:=Copy(s,1,i);
+end;
 
 { TNginxConfigParser }
 
