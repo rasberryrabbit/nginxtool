@@ -118,7 +118,7 @@ type
   end;
 
 
-function NginxRemoveTrailValue(const s:string):string;
+function NginxRemoveTrailValue(const s:string; delim:char=';'):string;
 
 implementation
 
@@ -126,7 +126,7 @@ uses
   strutils;
 
 
-function NginxRemoveTrailValue(const s:string):string;
+function NginxRemoveTrailValue(const s: string; delim: char): string;
 var
   i, l, fspace:Integer;
   ch : char;
@@ -138,7 +138,7 @@ begin
   while i>0 do begin
     ch := s[i];
     if fspace>0 then begin
-        if ch=';' then begin
+        if ch=delim then begin
           Dec(i);
           break;
         end;
