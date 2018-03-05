@@ -150,6 +150,13 @@ begin
     end;
     Dec(i);
   end;
+  // remove space
+  while i>0 do begin
+    ch:=s[i];
+    if ch>#32 then
+      break;
+    Dec(i);
+  end;
   if i<=0 then
     i:=l;
   Result:=Copy(s,1,i);
@@ -175,14 +182,14 @@ end;
 function TNginxConfigParser.ReadToken: string;
 var
   ch:char;
-  bComm:Boolean;
+  bReadEol:Boolean;
 begin
   Result:='';
-  bComm:=False;
+  bReadEol:=False;
   ReadSkipSpace;
   while FBufIdx<FBufLen do begin
     ch:=FBuffer[FBufIdx];
-    if not bComm then begin
+    if not bReadEol then begin
       { break on delimiter or space }
       if (ch<=#32) or
          ((ch = ';') and (Result<>'')) or
@@ -190,11 +197,8 @@ begin
       then
         break;
       { check comment }
-      if ch='#' then begin
-        bComm:=True;
-        if Result<>'' then
-          break;
-      end;
+      if (ch='#') and (Result='') then
+        bReadEol:=True;
     end else
       { read end of line }
       if ch in [#10,#13] then
