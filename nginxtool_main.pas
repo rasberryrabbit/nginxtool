@@ -43,11 +43,11 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-  private
-
   public
     procedure VerboseNginxConfig;
     function CheckSettingChange:Boolean;
+
+    procedure NginxLogEndLine;
 
   end;
 
@@ -208,9 +208,13 @@ begin
  {$ifdef WINDOWS}
  if CheckBox_priority.Checked then
    ProcessPriority('nginx.exe',ppval);
- {$endif}
  if nginx_process_find>0 then
    Timer1.Enabled:=False;
+ {$else}
+   Timer1.Enabled:=False;
+ {$endif}
+ if not Timer1.Enabled then
+   NginxLogEndLine;
 end;
 
 
@@ -490,6 +494,51 @@ begin
    Result:=ComboBox_waitkey.ItemIndex<>JSONPropStorage1.ReadInteger('wait_key',ComboBox_waitkey.ItemIndex);
  if not Result then
    Result:=ComboBox_Record.Text<>JSONPropStorage1.ReadString('record',ComboBox_Record.Text);
+end;
+
+procedure TFormNginxtool.NginxLogEndLine;
+const
+ ngxLogFile = './logs/error.log';
+var
+ fs : TFileStream;
+ l : int64;
+ i, j : Integer;
+ buf : array[0..1024] of char;
+begin
+ if not FileExists(ngxLogFile) then
+   exit;
+ try
+   fs := TFileStream.Create(ngxLogFile,fmOpenRead or fmShareDenyNone);
+   try
+     l:=fs.Size;
+     if l>1024 then
+       Dec(l,1024);
+     fs.Position:=l;
+     i:=fs.Read(buf[0],1024);
+   finally
+     fs.Free;
+   end;
+   if i>0 then begin
+     Dec(i);
+     j:=i;
+     while i>=0 do begin
+       if buf[i]>#32 then
+         break;
+       Dec(i);
+     end;
+     while i>=0 do begin
+       if buf[i] in [#10,#13] then begin
+         Inc(i);
+         break;
+       end;
+       Dec(i);
+     end;
+     loglist.AddLog('log: '+Copy(buf,i));
+   end;
+ except
+   on e:exception do
+     loglist.AddLog('log: '+e.Message);
+ end;
 end;
 
 procedure TFormNginxtool.FormCreate(Sender: TObject);
