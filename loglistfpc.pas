@@ -68,6 +68,8 @@ type
       constructor Create;
       destructor Destroy; override;
 
+      function GetStrObj(Index, MaxLen:Integer; out obj:TLogStringData):string;
+
       property TCol : TColor read DefaultTCol write DefaultTCol;
       property BCol : TColor read DefaultBCol write DefaultBCol;
   end;
@@ -79,7 +81,7 @@ type
     private
       PrevCount : Integer;
       LogData : TLogStringList;
-      tHeight, tWidth, MaxTextWidth, tItems : Integer;
+      tHeight, tWidth, MaxTextWidth, tItems, FLineSpace : Integer;
       FLineLimit, FLastPosY, FLastPosX : Integer;
       FEvent : TEvent;
       FOnDeleteLimit : TEventLogDeleteLimit;
@@ -92,6 +94,7 @@ type
       procedure SetHPos(Pos : Integer);
       procedure OnTimer(Sender : TObject);
       procedure CheckTextLen(const s: string);
+      procedure SetLineSpace(AValue: Integer);
     protected
       procedure Paint; override;
       procedure FontChanged(Sender: TObject); override;
@@ -131,6 +134,7 @@ type
 
       property Count: Integer read GetCount;
       property SkipMoveLast : Boolean read FSkipLast write FSkipLast;
+      property LineSpace: Integer read FLineSpace write SetLineSpace;
 
     published
       property List : TLogStringList read LogData;
@@ -213,10 +217,21 @@ begin
   end;
 end;
 
+procedure TLogListFPC.SetLineSpace(AValue: Integer);
+begin
+  if FLineSpace=AValue then Exit;
+  FLineSpace:=AValue;
+  tHeight:=Canvas.TextHeight('hj');
+  Inc(tHeight,FLineSpace);
+  if tHeight=0 then tHeight:=1;
+  tItems:=ClientHeight div tHeight;
+  FUpdated:=True;
+end;
+
 
 procedure TLogListFPC.Paint;
 var
-  cPos, cPointY, cPointX : Integer;
+  cPos, cPointY, cPointX, ViewHeight : Integer;
   cstr : string;
   temp : TLogStringData;
   SRect : TRect;
@@ -230,9 +245,9 @@ begin
   cPos := GetItemIndex; // FLastPosY updated
   cPointY:=cPos*tHeight+BorderWidth;
   cPointX:=BorderWidth-FLastPosX;
+  ViewHeight:=HorzScrollBar.ClientSizeWithBar;
   while cPos<Count do begin
-    cstr:=Copy(LogData.Strings[cPos],1,_LogMaxCharLen);
-    temp:=TLogStringData(LogData.Objects[cPos]);
+    cstr:=LogData.GetStrObj(cPos,_LogMaxCharLen,temp);
     Canvas.Brush.Color:=temp.B;
     Canvas.Font.Color:=temp.F;
     Canvas.TextRect(SRect,cPointX,cPointY,cstr);
@@ -241,7 +256,7 @@ begin
       Canvas.DrawFocusRect(Rect(cPointX-1,cPointY-1,cPointX+MaxTextWidth+1,cPointY+tHeight-1));
     *)
     Inc(cPointY,tHeight);
-    if (cPointY-FLastPosY)>ClientHeight then Break;
+    if (cPointY-FLastPosY)>ViewHeight then Break;
     Inc(cPos);
   end;
   Canvas.Brush.Color:=Color;
@@ -260,6 +275,7 @@ procedure TLogListFPC.FontChanged(Sender: TObject);
 begin
   inherited FontChanged(Sender);
   tHeight:=Canvas.TextHeight('hj');
+  Inc(tHeight,FLineSpace);
   if tHeight=0 then tHeight:=1;
   tWidth:=Canvas.TextWidth('F');
   tItems:=ClientHeight div tHeight;
@@ -328,6 +344,7 @@ constructor TLogListFPC.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   if Parent=nil then Parent:=TWinControl(AOwner);
+  FLineSpace:=2;
   BorderWidth:=5;
   FAddFlag:=False;
   FSkipLast:=False;
@@ -382,13 +399,8 @@ end;
 procedure TLogListFPC.SetLastPos;
 begin
   if Assigned(VertScrollBar) then begin
-    Enter;
-    try
-      VertScrollBar.Position:=VertScrollBar.Range;
-      FUpdated:=True;
-    finally
-      Leave;
-    end;
+    VertScrollBar.Position:=VertScrollBar.Range;
+    FUpdated:=True;
   end;
 end;
 
@@ -504,6 +516,8 @@ begin
     temp.F:=txtColor;
     temp.B:=BackColor;
     CheckTextLen(s);
+    if Idx>Count then
+       Idx:=Count;
     LogData.Insert(Idx,s);
     LogData.Objects[Idx]:=temp;
     FAddFlag:=True;
@@ -675,6 +689,18 @@ destructor TLogStringList.Destroy;
 begin
   fEvent.Free;
   inherited Destroy;
+end;
+
+function TLogStringList.GetStrObj(Index, MaxLen: Integer; out
+  obj: TLogStringData): string;
+begin
+  Enter;
+  try
+    Result:=Copy(inherited Get(Index),1,MaxLen);
+    obj:=TLogStringData(inherited GetObject(Index));
+  finally
+    Leave;
+  end;
 end;
 
 
