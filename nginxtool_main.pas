@@ -512,7 +512,9 @@ begin
    try
      l:=fs.Size;
      if l>1024 then
-       Dec(l,1024);
+       Dec(l,1024)
+       else
+         l:=0;
      fs.Position:=l;
      i:=fs.Read(buf[0],1024);
    finally
@@ -533,7 +535,7 @@ begin
        end;
        Dec(i);
      end;
-     loglist.AddLog('log: '+Copy(buf,i));
+     loglist.AddLog('log: '+Copy(buf,i,1024));
    end;
  except
    on e:exception do
