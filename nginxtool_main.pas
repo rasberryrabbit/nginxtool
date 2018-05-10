@@ -404,7 +404,7 @@ begin
      if CheckBoxModConf.Checked then begin
        if item=nil then begin
          if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_path',pchar(GetUserDir)+';');
+           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_path',pchar(StringReplace( ExtractFileDir(GetUserDir),PathDelim,'/',[rfReplaceAll]))+';');
            chunk_modified:=True;
          end;
        end;
