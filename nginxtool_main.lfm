@@ -10,7 +10,7 @@ object FormNginxtool: TFormNginxtool
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '1.9.0.0'
+  LCLVersion = '2.1.0.0'
   object Panel1: TPanel
     Left = 16
     Height = 167
@@ -18,7 +18,7 @@ object FormNginxtool: TFormNginxtool
     Width = 527
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvLowered
-    TabOrder = 3
+    TabOrder = 4
   end
   object Button1: TButton
     Left = 16
@@ -173,7 +173,7 @@ object FormNginxtool: TFormNginxtool
     )
     OnCloseUp = ComboBox_waitvideoCloseUp
     Style = csDropDownList
-    TabOrder = 4
+    TabOrder = 5
     Text = 'on'
   end
   object ComboBox_waitkey: TComboBox
@@ -189,8 +189,17 @@ object FormNginxtool: TFormNginxtool
     )
     OnCloseUp = ComboBox_waitvideoCloseUp
     Style = csDropDownList
-    TabOrder = 5
+    TabOrder = 6
     Text = 'on'
+  end
+  object Button3: TButton
+    Left = 304
+    Height = 25
+    Top = 120
+    Width = 123
+    Caption = '&Reload'
+    OnClick = Button3Click
+    TabOrder = 3
   end
   object UniqueInstance1: TUniqueInstance
     Enabled = True

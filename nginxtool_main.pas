@@ -15,6 +15,7 @@ type
   TFormNginxtool = class(TForm)
     Button1: TButton;
     Button2: TButton;
+    Button3: TButton;
     CheckBox_priority: TCheckBox;
     CheckBoxModConf: TCheckBox;
     ComboBox_Record: TComboBox;
@@ -34,6 +35,7 @@ type
     UniqueInstance1: TUniqueInstance;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
     procedure CheckBoxModConfClick(Sender: TObject);
     procedure ComboBoxChunkCloseUp(Sender: TObject);
     procedure ComboBoxChunkKeyPress(Sender: TObject; var Key: char);
@@ -647,6 +649,40 @@ begin
     myprocess.Free;
   end;
 end;
+
+procedure TFormNginxtool.Button3Click(Sender: TObject);
+var
+  myprocess:TProcess;
+  i : integer;
+begin
+  {$ifdef WINDOWS}
+  if not checkEnumProcess('nginx.exe') then begin
+     loglist.AddLog('> nginx is not running');
+     exit;
+  end;
+  {$endif}
+  myprocess:=TProcess.Create(nil);
+  try
+    myprocess.InheritHandles:=false;
+    myprocess.Options:=[];
+    myprocess.ShowWindow:=swoShow;
+    for i:=1 to GetEnvironmentVariableCount do
+      myprocess.Environment.Add(GetEnvironmentString(i));
+    myprocess.Executable:='nginx';
+    myprocess.Parameters.Add('-s');
+    myprocess.Parameters.Add('reload');
+    try
+      myprocess.Execute;
+      loglist.AddLog('> nginx reloaded');
+    except
+      on e:exception do
+         loglist.AddLog('> Error: '+e.Message);
+    end;
+  finally
+    myprocess.Free;
+  end;
+end;
+
 
 procedure TFormNginxtool.CheckBoxModConfClick(Sender: TObject);
 begin
