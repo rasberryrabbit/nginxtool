@@ -580,7 +580,8 @@ var
 begin
   {$ifdef WINDOWS}
   if checkEnumProcess('nginx.exe') then begin
-     loglist.AddLog('> Already running!');
+     loglist.AddLog('> Already running! Try reloading.');
+     Button3Click(Sender);
      exit;
   end;
   {$endif}
