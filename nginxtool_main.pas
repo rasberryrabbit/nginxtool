@@ -672,8 +672,21 @@ begin
     myprocess.Executable:='nginx';
     myprocess.Parameters.Add('-s');
     myprocess.Parameters.Add('reload');
+    {$ifdef WINDOWS}
+    if CheckBox_priority.Checked then
+      if UseAboveNormalProcess then begin
+        myprocess.Priority:=ppAboveNormal;
+        ppval:=ABOVE_NORMAL_PRIORITY_CLASS;
+      end
+      else begin
+        myprocess.Priority:=ppHigh;
+        ppval:=HIGH_PRIORITY_CLASS;
+      end;
+    {$endif}
     try
       myprocess.Execute;
+      nginx_process_find:=0;
+      Timer1.Enabled:=True;
       loglist.AddLog('> nginx reloaded');
     except
       on e:exception do
