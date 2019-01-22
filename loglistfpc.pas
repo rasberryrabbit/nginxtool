@@ -248,15 +248,18 @@ begin
   ViewHeight:=HorzScrollBar.ClientSizeWithBar;
   while cPos<Count do begin
     cstr:=LogData.GetStrObj(cPos,_LogMaxCharLen,temp);
-    Canvas.Brush.Color:=temp.B;
-    Canvas.Font.Color:=temp.F;
+    if temp<>nil then begin
+      Canvas.Brush.Color:=temp.B;
+      Canvas.Font.Color:=temp.F;
+    end;
     Canvas.TextRect(SRect,cPointX,cPointY,cstr);
     (*
     if Focused and (FSelectedIndex=cPos) then
       Canvas.DrawFocusRect(Rect(cPointX-1,cPointY-1,cPointX+MaxTextWidth+1,cPointY+tHeight-1));
     *)
     Inc(cPointY,tHeight);
-    if (cPointY-FLastPosY)>ViewHeight then Break;
+    if (cPointY-FLastPosY)>ViewHeight then
+       Break;
     Inc(cPos);
   end;
   Canvas.Brush.Color:=Color;
@@ -697,7 +700,11 @@ begin
   Enter;
   try
     Result:=Copy(inherited Get(Index),1,MaxLen);
-    obj:=TLogStringData(inherited GetObject(Index));
+    try
+      obj:=TLogStringData(inherited GetObject(Index));
+    except
+      obj:=nil;
+    end;
   finally
     Leave;
   end;
