@@ -576,7 +576,7 @@ end;
 procedure TFormNginxtool.Button1Click(Sender: TObject);
 var
   myprocess:TProcess;
-  i:integer;
+  i: integer;
 begin
   {$ifdef WINDOWS}
   if checkEnumProcess('nginx.exe') then begin
@@ -589,7 +589,7 @@ begin
   try
     myprocess.InheritHandles:=false;
     myprocess.Options:=[];
-    myprocess.ShowWindow:=swoShow;
+    myprocess.ShowWindow:=swoHIDE;
     for i:=1 to GetEnvironmentVariableCount do
       myprocess.Environment.Add(GetEnvironmentString(i));
     myprocess.Executable:='nginx';
@@ -621,7 +621,7 @@ end;
 procedure TFormNginxtool.Button2Click(Sender: TObject);
 var
   myprocess:TProcess;
-  i : integer;
+  i: integer;
 begin
   {$ifdef WINDOWS}
   if not checkEnumProcess('nginx.exe') then begin
@@ -633,7 +633,7 @@ begin
   try
     myprocess.InheritHandles:=false;
     myprocess.Options:=[];
-    myprocess.ShowWindow:=swoShow;
+    myprocess.ShowWindow:=swoHIDE;
     for i:=1 to GetEnvironmentVariableCount do
       myprocess.Environment.Add(GetEnvironmentString(i));
     myprocess.Executable:='nginx';
@@ -653,8 +653,8 @@ end;
 
 procedure TFormNginxtool.Button3Click(Sender: TObject);
 var
-  myprocess:TProcess;
-  i : integer;
+  myprocess: TProcess;
+  i: integer;
 begin
   {$ifdef WINDOWS}
   if not checkEnumProcess('nginx.exe') then begin
@@ -666,7 +666,7 @@ begin
   try
     myprocess.InheritHandles:=false;
     myprocess.Options:=[];
-    myprocess.ShowWindow:=swoShow;
+    myprocess.ShowWindow:=swoHIDE;
     for i:=1 to GetEnvironmentVariableCount do
       myprocess.Environment.Add(GetEnvironmentString(i));
     myprocess.Executable:='nginx';
