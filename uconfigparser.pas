@@ -68,6 +68,7 @@ type
       function AddNameValue(lvl: Integer; const sName, sValue: string): Integer;
       function InsertNameValue(Idx, lvl: Integer; const sName, sValue: string): TNginxItem;
       function AddNameGroup(lvl: Integer; const sName, sValue: string): Integer;
+      procedure MarkClose;
       function InsertNameGroup(Idx, lvl: Integer; const sName, sValue: string): TNginxItemGroup;
 
       function FindItemName(const str: string): TNginxItem;
@@ -415,7 +416,30 @@ begin
     temp.NameItem:=sName;
     temp.Value:=sValue;
     temp.Parents:=self;
-    Result:=FItemList.Add(temp);
+    if (FItemList.Count=0) or
+       ((FItemList[FItemList.Count-1] is TNginxItem) and
+        (TNginxItem(FItemList[FItemList.Count-1]).NameItem<>'}'))
+    then
+      Result:=FItemList.Add(temp)
+    else begin
+      FItemList.Insert(FItemList.Count-1,temp);
+      Result:=FItemList.Count-2;
+    end;
+  except
+    temp.Free;
+  end;
+end;
+
+procedure TNginxItemGroup.MarkClose;
+var
+  temp:TNginxItem;
+begin
+  temp:=TNginxItem.Create;
+  try
+    temp.Level:=Level;
+    temp.NameItem:='}';
+    temp.Value:='';
+    FItemList.Insert(FItemList.Count,temp);
   except
     temp.Free;
   end;

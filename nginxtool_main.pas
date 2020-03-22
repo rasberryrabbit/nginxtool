@@ -259,7 +259,7 @@ var
 
  configpar:TNginxConfigParser;
  item, itemprev:TNginxItem;
- itemgrp:TNginxItemGroup;
+ rtmpgrp, itemgrp, itemgrpPrev:TNginxItemGroup;
  itemidx:Integer;
  i,k:Integer;
 begin
@@ -307,10 +307,35 @@ begin
        loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
    end;
 
-   // check 'chunk_size 8192;'
-   itemgrp:=configpar.ItemList.FindItemGroup('rtmp');
-   if itemgrp<>nil then
-     itemgrp:=itemgrp.FindItemGroup('server');
+   // rtmp
+   rtmpgrp:=configpar.ItemList.FindItemGroup('rtmp');
+   if rtmpgrp=nil then begin
+     configpar.ItemList.AddNameGroup(0,'rtmp','{');
+     rtmpgrp:=configpar.ItemList.FindItemGroup('rtmp');
+     rtmpgrp.MarkClose;
+     chunk_modified:=True;
+   end;
+
+   // server
+   itemgrp:=rtmpgrp.FindItemGroup('server');
+   if itemgrp<>nil then begin
+     while itemgrp<>nil do begin
+       item:=itemgrp.FindItemName('listen');
+       if (item<>nil) and (item.Value='1935;') then
+         break;
+       itemgrp:=rtmpgrp.FindItemGroupNext(itemgrp,'server');
+     end;
+   end;
+   if itemgrp=nil then begin
+     rtmpgrp.AddNameGroup(rtmpgrp.Level+1,'server','{');
+     itemgrp:=rtmpgrp.FindItemGroup('server');
+     itemgrp.AddNameValue(itemgrp.Level+1,'listen','1935;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'chunk_size','4096;');
+     itemgrp.MarkClose;
+     chunk_modified:=True;
+   end;
+
+   // chunk_size 8192;
    if itemgrp<>nil then
      item:=itemgrp.FindItemName('chunk_size');
    if CheckBoxModConf.Checked then begin
@@ -330,12 +355,16 @@ begin
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
+   // application
+   itemgrpPrev:=itemgrp;
+   itemgrp:=itemgrp.FindItemGroup('application');
+   if itemgrp=nil then begin
+     itemgrpPrev.AddNameGroup(itemgrpPrev.Level+1,'application','live {');
+     itemgrp:=itemgrpPrev.FindItemGroup('application');
+     itemgrp.AddNameValue(itemgrp.Level+1,'live','on;');
+     itemgrp.MarkClose;
+   end;
    // insert meta copy
-   itemgrp:=configpar.ItemList.FindItemGroup('rtmp');
-   if itemgrp<>nil then
-     itemgrp:=itemgrp.FindItemGroup('server');
-   if itemgrp<>nil then
-     itemgrp:=itemgrp.FindItemGroup('application');
    if itemgrp<>nil then
      item:=itemgrp.FindItemName('meta');
    if CheckBoxModConf.Checked then begin
