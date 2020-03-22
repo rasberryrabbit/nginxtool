@@ -289,7 +289,7 @@ begin
         if (sValue<>'') and (sTemp<>';') then
           sValue:=sValue+' ';
         sValue:=sValue+sTemp;
-      until (sTemp=';') or (sTemp='{') or (sTemp='');
+      until (sTemp=';') or (sTemp='{') or (FBufLen=0);
       { add group or item }
       if stemp='{' then begin
         iCurr:=temp.AddNameGroup(iLVL,sName,sValue);
