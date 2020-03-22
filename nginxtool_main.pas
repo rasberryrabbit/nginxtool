@@ -432,14 +432,12 @@ begin
        Inc(i);
      end;
      // remove nil value item
-     if CheckBoxModConf.Checked and doUpdatePush then begin
-       item:=itemgrp.FindItemName('push');
-       while item<>nil do begin
-         itemprev:=item;
-         item:=itemgrp.FindItemNameNext(item,'push');
-         if itemprev.Value='' then
-           itemgrp.DeleteItem(itemprev);
-       end;
+     item:=itemgrp.FindItemName('push');
+     while item<>nil do begin
+       itemprev:=item;
+       item:=itemgrp.FindItemNameNext(item,'push');
+       if itemprev.Value='' then
+         itemgrp.DeleteItem(itemprev);
      end;
      doUpdatePush:=False;
    end;
