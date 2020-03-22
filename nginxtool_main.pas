@@ -363,6 +363,7 @@ begin
      itemgrp:=itemgrpPrev.FindItemGroup('application');
      itemgrp.AddNameValue(itemgrp.Level+1,'live','on;');
      itemgrp.MarkClose;
+     chunk_modified:=True;
    end;
    // insert meta copy
    if itemgrp<>nil then
