@@ -75,6 +75,7 @@ type
       function FindItemGroup(const str: string): TNginxItemGroup;
       function FindItemGroupNext(BaseItem:TNginxItemGroup; const str: string): TNginxItemGroup;
       procedure DeleteItem(item:TObject);
+      function IndexOfItem(item:TNginxItem):Integer;
 
       property Parents:TNginxItemGroup read FParents write FParents;
       property ItemList:TObjectList read FItemList;
@@ -365,14 +366,21 @@ end;
 
 function TNginxItemGroup.AddNameValue(lvl:Integer; const sName, sValue: string): Integer;
 var
-  temp:TNginxItem;
+  temp, tail:TNginxItem;
 begin
   temp:=TNginxItem.Create;
   try
     temp.Level:=lvl;
     temp.NameItem:=sName;
     temp.Value:=sValue;
-    Result:=FItemList.Add(temp);
+    if (FItemList.Count=0) or
+       (TNginxItem(FItemList[FItemList.Count-1]).NameItem<>'}')
+    then
+      Result:=FItemList.Add(temp)
+    else begin
+      FItemList.Insert(FItemList.Count-1,temp);
+      Result:=FItemList.Count-2;
+    end;
   except
     temp.Free;
   end;
@@ -485,6 +493,7 @@ begin
   end;
 end;
 
+// Item search reverse order, return prev item
 function TNginxItemGroup.FindItemGroupNext(BaseItem: TNginxItemGroup;
   const str: string): TNginxItemGroup;
 var
@@ -511,6 +520,11 @@ var
 begin
   i:=FItemList.IndexOf(item);
   FItemList.Delete(i);
+end;
+
+function TNginxItemGroup.IndexOfItem(item: TNginxItem): Integer;
+begin
+  Result:=FItemList.IndexOf(item);
 end;
 
 

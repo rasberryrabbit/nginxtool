@@ -79,3 +79,15 @@ msgstr ""
 msgid "Record"
 msgstr ""
 
+#: tformnginxtool.label6.caption
+msgid "RTMP1"
+msgstr ""
+
+#: tformnginxtool.label7.caption
+msgid "RTMP2"
+msgstr ""
+
+#: tformnginxtool.label8.caption
+msgid "RTMP3"
+msgstr ""
+

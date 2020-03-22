@@ -1,11 +1,11 @@
 object FormNginxtool: TFormNginxtool
   Left = 281
-  Height = 340
+  Height = 407
   Top = 140
   Width = 557
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'nginx rtmp tool'
-  ClientHeight = 340
+  ClientHeight = 407
   ClientWidth = 557
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -13,8 +13,8 @@ object FormNginxtool: TFormNginxtool
   LCLVersion = '2.1.0.0'
   object Panel1: TPanel
     Left = 16
-    Height = 167
-    Top = 160
+    Height = 154
+    Top = 240
     Width = 527
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvLowered
@@ -23,7 +23,7 @@ object FormNginxtool: TFormNginxtool
   object Button1: TButton
     Left = 16
     Height = 25
-    Top = 120
+    Top = 208
     Width = 112
     Caption = '&Start'
     OnClick = Button1Click
@@ -32,7 +32,7 @@ object FormNginxtool: TFormNginxtool
   object Button2: TButton
     Left = 152
     Height = 25
-    Top = 120
+    Top = 208
     Width = 123
     Caption = 'Sto&p'
     OnClick = Button2Click
@@ -40,12 +40,12 @@ object FormNginxtool: TFormNginxtool
   end
   object GroupBox1: TGroupBox
     Left = 8
-    Height = 113
+    Height = 202
     Top = 0
     Width = 536
     Anchors = [akTop, akLeft, akRight]
     Caption = ' Option '
-    ClientHeight = 96
+    ClientHeight = 185
     ClientWidth = 532
     TabOrder = 0
     object CheckBoxModConf: TCheckBox
@@ -159,6 +159,41 @@ object FormNginxtool: TFormNginxtool
       Caption = 'Record'
       ParentColor = False
     end
+    object EdRtmp1: TEdit
+      Left = 56
+      Height = 23
+      Top = 104
+      Width = 464
+      OnExit = EdRtmpExit
+      OnKeyPress = EdRtmpKeyPress
+      TabOrder = 5
+    end
+    object EdRtmp2: TEdit
+      Left = 56
+      Height = 23
+      Top = 128
+      Width = 464
+      OnExit = EdRtmpExit
+      OnKeyPress = EdRtmpKeyPress
+      TabOrder = 6
+    end
+    object EdRtmp3: TEdit
+      Left = 56
+      Height = 23
+      Top = 152
+      Width = 464
+      OnExit = EdRtmpExit
+      OnKeyPress = EdRtmpKeyPress
+      TabOrder = 7
+    end
+    object Label6: TLabel
+      Left = 5
+      Height = 12
+      Top = 112
+      Width = 41
+      Caption = 'RTMP1'
+      ParentColor = False
+    end
   end
   object ComboBox_waitvideo: TComboBox
     Left = 228
@@ -195,28 +230,44 @@ object FormNginxtool: TFormNginxtool
   object Button3: TButton
     Left = 304
     Height = 25
-    Top = 120
+    Top = 208
     Width = 123
     Caption = '&Reload'
     OnClick = Button3Click
     TabOrder = 3
   end
+  object Label7: TLabel
+    Left = 15
+    Height = 12
+    Top = 152
+    Width = 41
+    Caption = 'RTMP2'
+    ParentColor = False
+  end
+  object Label8: TLabel
+    Left = 15
+    Height = 12
+    Top = 176
+    Width = 41
+    Caption = 'RTMP3'
+    ParentColor = False
+  end
   object UniqueInstance1: TUniqueInstance
     Enabled = True
     Left = 312
-    Top = 112
+    Top = 192
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 500
     OnTimer = Timer1Timer
-    Left = 376
-    Top = 112
+    Left = 368
+    Top = 192
   end
   object JSONPropStorage1: TJSONPropStorage
     StoredValues = <>
     Formatted = True
-    Left = 464
-    Top = 112
+    Left = 440
+    Top = 192
   end
 end

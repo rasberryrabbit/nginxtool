@@ -23,6 +23,9 @@ type
     ComboBoxChunk: TComboBox;
     ComboBox_waitvideo: TComboBox;
     ComboBox_waitkey: TComboBox;
+    EdRtmp1: TEdit;
+    EdRtmp2: TEdit;
+    EdRtmp3: TEdit;
     GroupBox1: TGroupBox;
     JSONPropStorage1: TJSONPropStorage;
     Label1: TLabel;
@@ -30,6 +33,9 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
     Panel1: TPanel;
     Timer1: TTimer;
     UniqueInstance1: TUniqueInstance;
@@ -41,6 +47,8 @@ type
     procedure ComboBoxChunkKeyPress(Sender: TObject; var Key: char);
     procedure ComboBox_metaCloseUp(Sender: TObject);
     procedure ComboBox_waitvideoCloseUp(Sender: TObject);
+    procedure EdRtmpExit(Sender: TObject);
+    procedure EdRtmpKeyPress(Sender: TObject; var Key: char);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -70,6 +78,7 @@ var
   checkflag:string = '';
   ppval:DWORD;
   nginx_process_find:Integer=0;
+  doUpdatePush: Boolean = False;
 
 
 {$R *.lfm}
@@ -249,9 +258,10 @@ var
  IPBuf:array[0..254] of char;
 
  configpar:TNginxConfigParser;
- item:TNginxItem;
+ item, itemprev:TNginxItem;
  itemgrp:TNginxItemGroup;
  itemidx:Integer;
+ i,k:Integer;
 begin
  chunk_modified:=False;
  loglist.AddLog('----- nginx config -----');
@@ -382,6 +392,56 @@ begin
      end;
      if item<>nil then
        loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+   end;
+
+   // push check and update
+   if itemgrp<>nil then begin
+     item:=itemgrp.FindItemName('push');
+     i:=1;
+     // insert nil value item
+     if item=nil then begin
+       itemgrp.AddNameValue(itemgrp.Level+1,'push','');
+       item:=itemgrp.FindItemName('push');
+     end;
+
+     while item<>nil do begin
+       if i<=3 then begin
+         // restore push
+         if not doUpdatePush then begin
+           (FindComponent('EdRtmp'+IntToStr(i)) as TEdit).Text:=NginxRemoveTrailValue(item.Value);
+           item:=itemgrp.FindItemNameNext(item,'push');
+         end else begin
+         // update push
+           if CheckBoxModConf.Checked then begin
+             chunk_modified:=True;
+             if (FindComponent('EdRtmp'+IntToStr(i)) as TEdit).Text<>'' then
+               item.value:=(FindComponent('EdRtmp'+IntToStr(i)) as TEdit).Text+';'
+               else
+                 item.value:='';
+             itemprev:=item;
+             item:=itemgrp.FindItemNameNext(item,'push');
+             // insert nil value item
+             if item=nil then begin
+               itemgrp.InsertNameValue(itemgrp.IndexOfItem(itemprev),itemgrp.Level+1,'push','');
+               item:=itemgrp.FindItemNameNext(itemprev,'push');
+             end;
+           end;
+         end;
+       end else
+         break;
+       Inc(i);
+     end;
+     // remove nil value item
+     if CheckBoxModConf.Checked and doUpdatePush then begin
+       item:=itemgrp.FindItemName('push');
+       while item<>nil do begin
+         itemprev:=item;
+         item:=itemgrp.FindItemNameNext(item,'push');
+         if itemprev.Value='' then
+           itemgrp.DeleteItem(itemprev);
+       end;
+     end;
+     doUpdatePush:=False;
    end;
 
    // record [off|all|audio|video|keyframes|manual]
@@ -554,6 +614,7 @@ begin
   loglist.Color:=clWhite;
   loglist.LineLimit:=1000;
   Application.SingleInstanceEnabled:=True;
+  doUpdatePush:=False;
 end;
 
 procedure TFormNginxtool.FormDestroy(Sender: TObject);
@@ -700,6 +761,9 @@ end;
 
 procedure TFormNginxtool.CheckBoxModConfClick(Sender: TObject);
 begin
+  EdRtmp1.ReadOnly:=not CheckBoxModConf.Checked;
+  EdRtmp2.ReadOnly:=not CheckBoxModConf.Checked;
+  EdRtmp3.ReadOnly:=not CheckBoxModConf.Checked;
   if CheckBoxModConf.Checked then
     VerboseNginxConfig;
 end;
@@ -725,6 +789,25 @@ end;
 procedure TFormNginxtool.ComboBox_waitvideoCloseUp(Sender: TObject);
 begin
   CheckBoxModConfClick(nil);
+end;
+
+procedure TFormNginxtool.EdRtmpExit(Sender: TObject);
+begin
+  if TEdit(Sender).Modified then begin
+    doUpdatePush:=True;
+    VerboseNginxConfig;
+  end;
+end;
+
+procedure TFormNginxtool.EdRtmpKeyPress(Sender: TObject; var Key: char);
+begin
+  if key=#13 then begin
+    key:=#0;
+    if TEdit(Sender).Modified then begin
+      doUpdatePush:=True;
+      VerboseNginxConfig;
+    end;
+  end;
 end;
 
 procedure TFormNginxtool.FormShow(Sender: TObject);
