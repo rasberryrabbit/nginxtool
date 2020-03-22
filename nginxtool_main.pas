@@ -307,6 +307,16 @@ begin
        loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
    end;
 
+   //events
+   itemgrp:=configpar.ItemList.FindItemGroup('events');
+   if itemgrp=nil then begin
+     configpar.ItemList.AddNameGroup(0,'events','{');
+     itemgrp:=configpar.ItemList.FindItemGroup('events');
+     itemgrp.MarkClose;
+     itemgrp.AddNameValue(itemgrp.Level+1,'worker_connections','1024;');
+     chunk_modified:=True;
+   end;
+
    // rtmp
    rtmpgrp:=configpar.ItemList.FindItemGroup('rtmp');
    if rtmpgrp=nil then begin
