@@ -298,25 +298,29 @@ begin
    begin
      workercount:=1;
      if CheckBoxModConf.Checked then begin
-       item:=configpar.ItemList.InsertNameValue(0,1,'worker_processes','1;');
+       item:=configpar.ItemList.InsertNameValue(0,0,'worker_processes','1;');
        chunk_modified:=True;
      end;
    end;
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
-   // check 'rtmp_auto_push on;'
+   // rtmp_auto_push - multiworker push
    item:=configpar.ItemList.FindItemName('rtmp_auto_push');
-   if item<>nil then begin
-     if CheckBoxModConf.Checked then begin
-       configpar.ItemList.DeleteItem(item);
-       chunk_modified:=True;
-       loglist.AddLog('rtmp_auto_push removed');
-     end else
-       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+   if item=nil then begin
+     item:=configpar.ItemList.InsertNameValue(0,0,'rtmp_auto_push','off;');
+     chunk_modified:=True;
    end;
+   if CheckBoxModConf.Checked then begin
+     if workercount<2 then
+       item.Value:='off;'
+       else
+         item.Value:='on;';
+     chunk_modified:=True;
+   end;
+   loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
-   //events
+   // events
    itemgrp:=configpar.ItemList.FindItemGroup('events');
    if itemgrp=nil then begin
      configpar.ItemList.AddNameGroup(0,'events','{');
@@ -326,7 +330,7 @@ begin
      chunk_modified:=True;
    end;
 
-   // rtmp
+   // ----- rtmp -----
    rtmpgrp:=configpar.ItemList.FindItemGroup('rtmp');
    if rtmpgrp=nil then begin
      configpar.ItemList.AddNameGroup(0,'rtmp','{');
@@ -335,12 +339,12 @@ begin
      chunk_modified:=True;
    end;
 
-   // server
+   // ----- server -----
    itemgrp:=rtmpgrp.FindItemGroup('server');
    if itemgrp<>nil then begin
      while itemgrp<>nil do begin
        item:=itemgrp.FindItemName('listen');
-       if (item<>nil) and (item.Value='1935;') then
+       if (item<>nil) and (NginxRemoveTrailValue(item.Value)='1935') then
          break;
        itemgrp:=rtmpgrp.FindItemGroupNext(itemgrp,'server');
      end;
@@ -353,10 +357,27 @@ begin
      itemgrp.MarkClose;
      chunk_modified:=True;
    end;
+   // sync
+   item:=itemgrp.FindItemName('sync');
+   if item=nil then begin
+     itemgrp.AddNameValue(itemgrp.Level+1,'sync','10ms;');
+     chunk_modified:=True;
+   end;
+   // buflen
+   item:=itemgrp.FindItemName('buflen');
+   if item=nil then begin
+     itemgrp.AddNameValue(itemgrp.Level+1,'buflen','1s;');
+     chunk_modified:=True;
+   end;
+   // publish_notify
+   item:=itemgrp.FindItemName('publish_notify');
+   if item=nil then begin
+     itemgrp.AddNameValue(itemgrp.Level+1,'publish_notify','on;');
+     chunk_modified:=True;
+   end;
 
    // chunk_size 8192;
-   if itemgrp<>nil then
-     item:=itemgrp.FindItemName('chunk_size');
+   item:=itemgrp.FindItemName('chunk_size');
    if CheckBoxModConf.Checked then begin
      if item<>nil then begin
        if Item.Value<>schunksize+';' then begin
@@ -374,19 +395,44 @@ begin
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
-   // application
-   itemgrpPrev:=itemgrp;
-   itemgrp:=itemgrp.FindItemGroup('application');
-   if itemgrp=nil then begin
-     itemgrpPrev.AddNameGroup(itemgrpPrev.Level+1,'application','live {');
-     itemgrp:=itemgrpPrev.FindItemGroup('application');
-     itemgrp.AddNameValue(itemgrp.Level+1,'live','on;');
-     itemgrp.MarkClose;
-     chunk_modified:=True;
+   // wait_video
+   item:=itemgrp.FindItemName('wait_video');
+   if CheckBoxModConf.Checked then begin
+     if item<>nil then begin
+       if item.Value<>ComboBox_waitvideo.Text+';' then begin
+         item.Value:=ComboBox_waitvideo.Text+';';
+         chunk_modified:=True;
+       end;
+     end else begin
+       if itemgrp<>nil then begin
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'wait_video',ComboBox_waitvideo.Text+';');
+         chunk_modified:=True;
+       end;
+     end;
    end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
+   // wait_key
+   item:=itemgrp.FindItemName('wait_key');
+   if CheckBoxModConf.Checked then begin
+     if item<>nil then begin
+       if item.Value<>ComboBox_waitkey.Text+';' then begin
+         item.Value:=ComboBox_waitkey.Text+';';
+         chunk_modified:=True;
+       end;
+     end else begin
+       if itemgrp<>nil then begin
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'wait_key',ComboBox_waitkey.Text+';');
+         chunk_modified:=True;
+       end;
+     end;
+   end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
    // insert meta copy
-   if itemgrp<>nil then
-     item:=itemgrp.FindItemName('meta');
+   item:=itemgrp.FindItemName('meta');
    if CheckBoxModConf.Checked then begin
      if item<>nil then begin
        if item.Value<>ComboBox_meta.Text+';' then begin
@@ -403,44 +449,18 @@ begin
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
-   // wait_video
-   if itemgrp<>nil then begin
-     item:=itemgrp.FindItemName('wait_video');
-     if CheckBoxModConf.Checked then begin
-       if item<>nil then begin
-         if item.Value<>ComboBox_waitvideo.Text+';' then begin
-           item.Value:=ComboBox_waitvideo.Text+';';
-           chunk_modified:=True;
-         end;
-       end else begin
-         if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'wait_video',ComboBox_waitvideo.Text+';');
-           chunk_modified:=True;
-         end;
-       end;
-     end;
-     if item<>nil then
-       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
-   end;
-
-   // wait_key
-   if itemgrp<>nil then begin
-     item:=itemgrp.FindItemName('wait_key');
-     if CheckBoxModConf.Checked then begin
-       if item<>nil then begin
-         if item.Value<>ComboBox_waitkey.Text+';' then begin
-           item.Value:=ComboBox_waitkey.Text+';';
-           chunk_modified:=True;
-         end;
-       end else begin
-         if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'wait_key',ComboBox_waitkey.Text+';');
-           chunk_modified:=True;
-         end;
-       end;
-     end;
-     if item<>nil then
-       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+   // ----- application -----
+   itemgrpPrev:=itemgrp;
+   itemgrp:=itemgrp.FindItemGroup('application');
+   if itemgrp=nil then begin
+     itemgrpPrev.AddNameGroup(itemgrpPrev.Level+1,'application','live {');
+     itemgrp:=itemgrpPrev.FindItemGroup('application');
+     itemgrp.AddNameValue(itemgrp.Level+1,'live','on;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'idle_streams','on;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'allow','publish all;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'allow','play all;');
+     itemgrp.MarkClose;
+     chunk_modified:=True;
    end;
 
    // push check and update
@@ -492,70 +512,61 @@ begin
    end;
 
    // record [off|all|audio|video|keyframes|manual]
-   if itemgrp<>nil then begin
-     item:=itemgrp.FindItemName('record');
-     if CheckBoxModConf.Checked then begin
-       if item<>nil then begin
-         if item.Value<>ComboBox_Record.Text+';' then begin
-           item.Value:=ComboBox_Record.Text+';';
-           chunk_modified:=True;
-         end;
-       end else begin
-         if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record',ComboBox_Record.Text+';');
-           chunk_modified:=True;
-         end;
+   item:=itemgrp.FindItemName('record');
+   if CheckBoxModConf.Checked then begin
+     if item<>nil then begin
+       if item.Value<>ComboBox_Record.Text+';' then begin
+         item.Value:=ComboBox_Record.Text+';';
+         chunk_modified:=True;
+       end;
+     end else begin
+       if itemgrp<>nil then begin
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record',ComboBox_Record.Text+';');
+         chunk_modified:=True;
        end;
      end;
-     if item<>nil then
-       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
    end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
    // record path
-   if itemgrp<>nil then begin
-     item:=itemgrp.FindItemName('record_path');
-     if CheckBoxModConf.Checked then begin
-       if item=nil then begin
-         if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_path',pchar(StringReplace( ExtractFileDir(GetUserDir),PathDelim,'/',[rfReplaceAll]))+';');
-           chunk_modified:=True;
-         end;
+   item:=itemgrp.FindItemName('record_path');
+   if CheckBoxModConf.Checked then begin
+     if item=nil then begin
+       if itemgrp<>nil then begin
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_path',pchar(StringReplace( ExtractFileDir(GetUserDir),PathDelim,'/',[rfReplaceAll]))+';');
+         chunk_modified:=True;
        end;
      end;
-     if item<>nil then
-       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
    end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
    // record_max_size 128;
-   if itemgrp<>nil then begin
-     item:=itemgrp.FindItemName('record_max_size');
-     if CheckBoxModConf.Checked then begin
-       if item=nil then begin
-         if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_max_size','600M;');
-           chunk_modified:=True;
-         end;
+   item:=itemgrp.FindItemName('record_max_size');
+   if CheckBoxModConf.Checked then begin
+     if item=nil then begin
+       if itemgrp<>nil then begin
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_max_size','600M;');
+         chunk_modified:=True;
        end;
      end;
-     if item<>nil then
-       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
    end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
    // record_suffix .flv;
-   if itemgrp<>nil then begin
-     item:=itemgrp.FindItemName('record_suffix');
-     if CheckBoxModConf.Checked then begin
-       if item=nil then begin
-         if itemgrp<>nil then begin
-           item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_suffix','-%y-%m-%d-%H-%M-%S.flv;');
-           chunk_modified:=True;
-         end;
+   item:=itemgrp.FindItemName('record_suffix');
+   if CheckBoxModConf.Checked then begin
+     if item=nil then begin
+       if itemgrp<>nil then begin
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_suffix','-%y-%m-%d-%H-%M-%S.flv;');
+         chunk_modified:=True;
        end;
      end;
-     if item<>nil then
-       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
    end;
-
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
    if chunk_modified then begin
      try
@@ -568,15 +579,13 @@ begin
    end;
 
    // show push values
-   if itemgrp<>nil then begin
-     item:=itemgrp.FindItemName('push');
-     repeat
-       if item<>nil then begin
-         loglist.AddLog(Format('%s %s',[item.NameItem,item.Value{Copy(item.Value,1,40)+'...'}]));
-         item:=itemgrp.FindItemNameNext(item,'push');
-       end;
-     until item=nil;
-   end;
+   item:=itemgrp.FindItemName('push');
+   repeat
+     if item<>nil then begin
+       loglist.AddLog(Format('%s %s',[item.NameItem,item.Value{Copy(item.Value,1,40)+'...'}]));
+       item:=itemgrp.FindItemNameNext(item,'push');
+     end;
+   until item=nil;
 
  finally
    configpar.Free;
