@@ -262,6 +262,7 @@ var
  rtmpgrp, itemgrp, itemgrpPrev:TNginxItemGroup;
  itemidx:Integer;
  i,k:Integer;
+ dHandle: THANDLE;
 begin
  chunk_modified:=False;
  loglist.AddLog('----- nginx config -----');
@@ -273,6 +274,14 @@ begin
 
  configpar:=TNginxConfigParser.Create;
  try
+   // create nil file
+   ForceDirectories('conf');
+   if not FileExists('conf/nginx.conf') then begin
+     dHandle:=FileCreate('conf/nginx.conf');
+     FileClose(dHandle);
+   end;
+
+   // open
    configpar.Load('conf/nginx.conf');
 
    // check 'worker_process 1;'
@@ -853,7 +862,7 @@ begin
   try
     JSONPropStorage1.Restore;
     CheckBox_priority.Checked:=JSONPropStorage1.ReadBoolean('priority',False);
-    CheckBoxModConf.Checked:=JSONPropStorage1.ReadBoolean('modify',False);
+    CheckBoxModConf.Checked:=JSONPropStorage1.ReadBoolean('modify',True);
     ComboBoxChunk.Text:=JSONPropStorage1.ReadString('chunk_size',ComboBoxChunk.Text);
     ComboBox_meta.ItemIndex:=JSONPropStorage1.ReadInteger('meta',ComboBox_meta.ItemIndex);
     ComboBox_waitvideo.ItemIndex:=JSONPropStorage1.ReadInteger('wait_video',ComboBox_waitvideo.ItemIndex);
