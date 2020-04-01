@@ -34,6 +34,7 @@ msgid "copy"
 msgstr ""
 
 #: tformnginxtool.combobox_record.text
+msgctxt "tformnginxtool.combobox_record.text"
 msgid "off"
 msgstr ""
 
@@ -44,7 +45,7 @@ msgstr ""
 
 #: tformnginxtool.combobox_waitvideo.text
 msgctxt "tformnginxtool.combobox_waitvideo.text"
-msgid "on"
+msgid "off"
 msgstr ""
 
 #: tformnginxtool.groupbox1.caption

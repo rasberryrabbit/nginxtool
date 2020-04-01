@@ -360,7 +360,7 @@ begin
    // sync
    item:=itemgrp.FindItemName('sync');
    if item=nil then begin
-     itemgrp.AddNameValue(itemgrp.Level+1,'sync','10ms;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'sync','300ms;');
      chunk_modified:=True;
    end;
    // buflen
@@ -369,12 +369,14 @@ begin
      itemgrp.AddNameValue(itemgrp.Level+1,'buflen','1s;');
      chunk_modified:=True;
    end;
+   {
    // publish_notify
    item:=itemgrp.FindItemName('publish_notify');
    if item=nil then begin
      itemgrp.AddNameValue(itemgrp.Level+1,'publish_notify','on;');
      chunk_modified:=True;
    end;
+   }
 
    // chunk_size 8192;
    item:=itemgrp.FindItemName('chunk_size');
@@ -456,7 +458,9 @@ begin
      itemgrpPrev.AddNameGroup(itemgrpPrev.Level+1,'application','live {');
      itemgrp:=itemgrpPrev.FindItemGroup('application');
      itemgrp.AddNameValue(itemgrp.Level+1,'live','on;');
-     itemgrp.AddNameValue(itemgrp.Level+1,'idle_streams','on;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'interleave','off;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'idle_streams','off;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'session_relay','on;');
      itemgrp.AddNameValue(itemgrp.Level+1,'allow','publish all;');
      itemgrp.AddNameValue(itemgrp.Level+1,'allow','play all;');
      itemgrp.MarkClose;

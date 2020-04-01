@@ -201,7 +201,7 @@ object FormNginxtool: TFormNginxtool
     Top = 79
     Width = 60
     ItemHeight = 15
-    ItemIndex = 0
+    ItemIndex = 1
     Items.Strings = (
       'on'
       'off'
@@ -209,7 +209,7 @@ object FormNginxtool: TFormNginxtool
     OnCloseUp = ComboBox_waitvideoCloseUp
     Style = csDropDownList
     TabOrder = 5
-    Text = 'on'
+    Text = 'off'
   end
   object ComboBox_waitkey: TComboBox
     Left = 392
