@@ -21,12 +21,33 @@ msgstr ""
 msgid "Modify Config File"
 msgstr "설정 파일 수정"
 
+#: tformnginxtool.checkbox_idlestm.caption
+msgid "idle_streams"
+msgstr ""
+
 #: tformnginxtool.checkbox_priority.caption
 msgid "Above Normal Priority"
 msgstr "우선도 보통 이상"
 
+#: tformnginxtool.checkbox_publishnotify.caption
+msgid "publish_notify"
+msgstr ""
+
+#: tformnginxtool.checkbox_sessionrelay.caption
+msgid "session_relay"
+msgstr ""
+
+#: tformnginxtool.checkbox_waitkey.caption
+msgctxt "tformnginxtool.checkbox_waitkey.caption"
+msgid "wait_key"
+msgstr ""
+
+#: tformnginxtool.checkbox_waitvideo.caption
+msgid "wait_video"
+msgstr ""
+
 #: tformnginxtool.comboboxchunk.text
-msgid "8192"
+msgid "4096"
 msgstr ""
 
 #: tformnginxtool.combobox_meta.text
@@ -35,16 +56,6 @@ msgstr ""
 
 #: tformnginxtool.combobox_record.text
 msgctxt "tformnginxtool.combobox_record.text"
-msgid "off"
-msgstr ""
-
-#: tformnginxtool.combobox_waitkey.text
-msgctxt "tformnginxtool.combobox_waitkey.text"
-msgid "on"
-msgstr ""
-
-#: tformnginxtool.combobox_waitvideo.text
-msgctxt "tformnginxtool.combobox_waitvideo.text"
 msgid "off"
 msgstr ""
 
@@ -58,22 +69,6 @@ msgstr "Chunk 크기 :"
 
 #: tformnginxtool.label2.caption
 msgid "meta :"
-msgstr ""
-
-#: tformnginxtool.label3.caption
-msgid "wait_video :"
-msgstr ""
-
-#: tformnginxtool.label3.hint
-msgid "It makes some delay."
-msgstr ""
-
-#: tformnginxtool.label4.caption
-msgid "wait_key"
-msgstr ""
-
-#: tformnginxtool.label4.hint
-msgid "wait keyframe."
 msgstr ""
 
 #: tformnginxtool.label5.caption
@@ -90,5 +85,9 @@ msgstr ""
 
 #: tformnginxtool.label8.caption
 msgid "RTMP3"
+msgstr ""
+
+#: tformnginxtool.label9.caption
+msgid "sync"
 msgstr ""
 

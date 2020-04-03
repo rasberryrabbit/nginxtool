@@ -1,20 +1,20 @@
 object FormNginxtool: TFormNginxtool
   Left = 281
-  Height = 407
+  Height = 418
   Top = 140
   Width = 557
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'nginx rtmp tool'
-  ClientHeight = 407
+  ClientHeight = 418
   ClientWidth = 557
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '2.1.0.0'
   object Panel1: TPanel
-    Left = 16
-    Height = 154
-    Top = 240
+    Left = 17
+    Height = 108
+    Top = 296
     Width = 527
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvLowered
@@ -23,7 +23,7 @@ object FormNginxtool: TFormNginxtool
   object Button1: TButton
     Left = 16
     Height = 25
-    Top = 208
+    Top = 256
     Width = 112
     Caption = '&Start'
     OnClick = Button1Click
@@ -32,7 +32,7 @@ object FormNginxtool: TFormNginxtool
   object Button2: TButton
     Left = 152
     Height = 25
-    Top = 208
+    Top = 256
     Width = 123
     Caption = 'Sto&p'
     OnClick = Button2Click
@@ -40,12 +40,12 @@ object FormNginxtool: TFormNginxtool
   end
   object GroupBox1: TGroupBox
     Left = 8
-    Height = 202
+    Height = 248
     Top = 0
     Width = 536
     Anchors = [akTop, akLeft, akRight]
     Caption = ' Option '
-    ClientHeight = 185
+    ClientHeight = 231
     ClientWidth = 532
     TabOrder = 0
     object CheckBoxModConf: TCheckBox
@@ -78,15 +78,15 @@ object FormNginxtool: TFormNginxtool
       Top = 30
       Width = 68
       ItemHeight = 15
-      ItemIndex = 1
+      ItemIndex = 0
       Items.Strings = (
         '4096'
         '8192'
       )
-      OnCloseUp = ComboBoxChunkCloseUp
+      OnCloseUp = ComboBox_ValueChange
       OnKeyPress = ComboBoxChunkKeyPress
       TabOrder = 2
-      Text = '8192'
+      Text = '4096'
     end
     object ComboBox_meta: TComboBox
       Left = 56
@@ -100,9 +100,9 @@ object FormNginxtool: TFormNginxtool
         'on'
         'copy'
       )
-      OnCloseUp = ComboBox_metaCloseUp
+      OnCloseUp = ComboBox_ValueChange
       Style = csDropDownList
-      TabOrder = 4
+      TabOrder = 5
       Text = 'copy'
     end
     object Label2: TLabel
@@ -113,30 +113,8 @@ object FormNginxtool: TFormNginxtool
       Caption = 'meta :'
       ParentColor = False
     end
-    object Label3: TLabel
-      Left = 144
-      Height = 12
-      Hint = 'It makes some delay.'
-      Top = 68
-      Width = 67
-      Caption = 'wait_video :'
-      ParentColor = False
-      ParentShowHint = False
-      ShowHint = True
-    end
-    object Label4: TLabel
-      Left = 315
-      Height = 12
-      Hint = 'wait keyframe.'
-      Top = 69
-      Width = 49
-      Caption = 'wait_key'
-      ParentColor = False
-      ParentShowHint = False
-      ShowHint = True
-    end
     object ComboBox_Record: TComboBox
-      Left = 352
+      Left = 240
       Height = 23
       Top = 30
       Width = 100
@@ -152,102 +130,130 @@ object FormNginxtool: TFormNginxtool
       Text = 'off'
     end
     object Label5: TLabel
-      Left = 290
+      Left = 192
       Height = 12
-      Top = 36
+      Top = 35
       Width = 40
       Caption = 'Record'
       ParentColor = False
     end
     object EdRtmp1: TEdit
-      Left = 56
+      Left = 64
       Height = 23
-      Top = 104
+      Top = 144
       Width = 464
       OnExit = EdRtmpExit
       OnKeyPress = EdRtmpKeyPress
-      TabOrder = 5
+      TabOrder = 11
     end
     object EdRtmp2: TEdit
-      Left = 56
+      Left = 64
       Height = 23
-      Top = 128
+      Top = 168
       Width = 464
       OnExit = EdRtmpExit
       OnKeyPress = EdRtmpKeyPress
-      TabOrder = 6
+      TabOrder = 12
     end
     object EdRtmp3: TEdit
-      Left = 56
+      Left = 64
       Height = 23
-      Top = 152
+      Top = 192
       Width = 464
       OnExit = EdRtmpExit
       OnKeyPress = EdRtmpKeyPress
-      TabOrder = 7
+      TabOrder = 13
     end
     object Label6: TLabel
-      Left = 5
+      Left = 14
       Height = 12
-      Top = 112
+      Top = 152
       Width = 41
       Caption = 'RTMP1'
       ParentColor = False
     end
-  end
-  object ComboBox_waitvideo: TComboBox
-    Left = 228
-    Height = 23
-    Top = 79
-    Width = 60
-    ItemHeight = 15
-    ItemIndex = 1
-    Items.Strings = (
-      'on'
-      'off'
-    )
-    OnCloseUp = ComboBox_waitvideoCloseUp
-    Style = csDropDownList
-    TabOrder = 5
-    Text = 'off'
-  end
-  object ComboBox_waitkey: TComboBox
-    Left = 392
-    Height = 23
-    Top = 79
-    Width = 60
-    ItemHeight = 15
-    ItemIndex = 0
-    Items.Strings = (
-      'on'
-      'off'
-    )
-    OnCloseUp = ComboBox_waitvideoCloseUp
-    Style = csDropDownList
-    TabOrder = 6
-    Text = 'on'
+    object CheckBox_waitvideo: TCheckBox
+      Left = 144
+      Height = 19
+      Top = 64
+      Width = 76
+      Caption = 'wait_video'
+      TabOrder = 6
+    end
+    object CheckBox_waitkey: TCheckBox
+      Left = 240
+      Height = 19
+      Top = 64
+      Width = 65
+      Caption = 'wait_key'
+      Checked = True
+      State = cbChecked
+      TabOrder = 7
+    end
+    object CheckBox_idlestm: TCheckBox
+      Left = 336
+      Height = 19
+      Top = 64
+      Width = 85
+      Caption = 'idle_streams'
+      TabOrder = 8
+    end
+    object CheckBox_sessionrelay: TCheckBox
+      Left = 10
+      Height = 19
+      Top = 96
+      Width = 88
+      Caption = 'session_relay'
+      TabOrder = 9
+    end
+    object CheckBox_publishnotify: TCheckBox
+      Left = 144
+      Height = 19
+      Top = 96
+      Width = 95
+      Caption = 'publish_notify'
+      TabOrder = 10
+    end
+    object Label9: TLabel
+      Left = 368
+      Height = 12
+      Top = 35
+      Width = 28
+      Caption = 'sync'
+      ParentColor = False
+    end
+    object SpinEdit_sync: TSpinEdit
+      Left = 408
+      Height = 23
+      Top = 30
+      Width = 82
+      MaxValue = 10000
+      MinValue = 10
+      TabOrder = 4
+      Value = 300
+    end
   end
   object Button3: TButton
     Left = 304
     Height = 25
-    Top = 208
+    Top = 256
     Width = 123
     Caption = '&Reload'
     OnClick = Button3Click
     TabOrder = 3
   end
   object Label7: TLabel
-    Left = 15
+    Left = 24
     Height = 12
-    Top = 152
+    Top = 192
     Width = 41
     Caption = 'RTMP2'
     ParentColor = False
   end
   object Label8: TLabel
-    Left = 15
+    Left = 24
     Height = 12
-    Top = 176
+    Top = 217
     Width = 41
     Caption = 'RTMP3'
     ParentColor = False
