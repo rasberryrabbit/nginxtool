@@ -924,6 +924,12 @@ end;
 
 procedure TFormNginxtool.CheckBox_ValueChange(Sender: TObject);
 begin
+  if (Sender = CheckBox_waitkey) and
+    (CheckBox_waitkey.Checked) and
+    (not CheckBox_waitvideo.Checked)
+    then
+    CheckBox_waitvideo.Checked:=True;
+
   CheckBoxModConfClick(nil);
 end;
 

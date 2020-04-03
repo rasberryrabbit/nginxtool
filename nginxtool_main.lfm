@@ -1,11 +1,11 @@
 object FormNginxtool: TFormNginxtool
   Left = 281
-  Height = 418
+  Height = 430
   Top = 140
   Width = 557
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'nginx rtmp tool'
-  ClientHeight = 418
+  ClientHeight = 430
   ClientWidth = 557
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -13,7 +13,7 @@ object FormNginxtool: TFormNginxtool
   LCLVersion = '2.1.0.0'
   object Panel1: TPanel
     Left = 17
-    Height = 108
+    Height = 120
     Top = 296
     Width = 527
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -181,17 +181,15 @@ object FormNginxtool: TFormNginxtool
       TabOrder = 6
     end
     object CheckBox_waitkey: TCheckBox
-      Left = 240
+      Left = 256
       Height = 19
       Top = 64
       Width = 65
       Caption = 'wait_key'
-      Checked = True
-      State = cbChecked
       TabOrder = 7
     end
     object CheckBox_idlestm: TCheckBox
-      Left = 336
+      Left = 384
       Height = 19
       Top = 64
       Width = 85
