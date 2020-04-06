@@ -54,7 +54,7 @@ object FormNginxtool: TFormNginxtool
       Top = 4
       Width = 120
       Caption = 'Modify Config File'
-      TabOrder = 0
+      TabOrder = 1
     end
     object CheckBox_priority: TCheckBox
       Left = 10
@@ -62,7 +62,7 @@ object FormNginxtool: TFormNginxtool
       Top = 4
       Width = 140
       Caption = 'Above Normal Priority'
-      TabOrder = 1
+      TabOrder = 0
     end
     object Label1: TLabel
       Left = 10
@@ -71,22 +71,6 @@ object FormNginxtool: TFormNginxtool
       Width = 73
       Caption = 'Chunk Size :'
       ParentColor = False
-    end
-    object ComboBoxChunk: TComboBox
-      Left = 92
-      Height = 23
-      Top = 30
-      Width = 68
-      ItemHeight = 15
-      ItemIndex = 0
-      Items.Strings = (
-        '4096'
-        '8192'
-      )
-      OnCloseUp = ComboBox_ValueChange
-      OnKeyPress = ComboBoxChunkKeyPress
-      TabOrder = 2
-      Text = '4096'
     end
     object ComboBox_meta: TComboBox
       Left = 56
@@ -114,7 +98,7 @@ object FormNginxtool: TFormNginxtool
       ParentColor = False
     end
     object ComboBox_Record: TComboBox
-      Left = 240
+      Left = 256
       Height = 23
       Top = 30
       Width = 100
@@ -130,7 +114,7 @@ object FormNginxtool: TFormNginxtool
       Text = 'off'
     end
     object Label5: TLabel
-      Left = 192
+      Left = 208
       Height = 12
       Top = 35
       Width = 40
@@ -144,7 +128,7 @@ object FormNginxtool: TFormNginxtool
       Width = 464
       OnExit = EdRtmpExit
       OnKeyPress = EdRtmpKeyPress
-      TabOrder = 11
+      TabOrder = 12
     end
     object EdRtmp2: TEdit
       Left = 64
@@ -153,7 +137,7 @@ object FormNginxtool: TFormNginxtool
       Width = 464
       OnExit = EdRtmpExit
       OnKeyPress = EdRtmpKeyPress
-      TabOrder = 12
+      TabOrder = 13
     end
     object EdRtmp3: TEdit
       Left = 64
@@ -162,7 +146,7 @@ object FormNginxtool: TFormNginxtool
       Width = 464
       OnExit = EdRtmpExit
       OnKeyPress = EdRtmpKeyPress
-      TabOrder = 13
+      TabOrder = 14
     end
     object Label6: TLabel
       Left = 14
@@ -225,10 +209,41 @@ object FormNginxtool: TFormNginxtool
       Height = 23
       Top = 30
       Width = 82
+      Increment = 10
       MaxValue = 10000
       MinValue = 10
       TabOrder = 4
       Value = 300
+    end
+    object SpinEdit_buflen: TSpinEdit
+      Left = 408
+      Height = 23
+      Top = 96
+      Width = 90
+      Increment = 10
+      MaxValue = 10000
+      MinValue = 10
+      TabOrder = 11
+      Value = 1000
+    end
+    object Label3: TLabel
+      Left = 360
+      Height = 12
+      Top = 103
+      Width = 34
+      Caption = 'buflen'
+      ParentColor = False
+    end
+    object SpinEdit_chunk: TSpinEdit
+      Left = 88
+      Height = 23
+      Top = 30
+      Width = 96
+      Increment = 512
+      MaxValue = 32768
+      MinValue = 512
+      TabOrder = 2
+      Value = 4096
     end
   end
   object Button3: TButton

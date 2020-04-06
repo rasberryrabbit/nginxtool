@@ -25,7 +25,6 @@ type
     CheckBoxModConf: TCheckBox;
     ComboBox_Record: TComboBox;
     ComboBox_meta: TComboBox;
-    ComboBoxChunk: TComboBox;
     EdRtmp1: TEdit;
     EdRtmp2: TEdit;
     EdRtmp3: TEdit;
@@ -33,12 +32,15 @@ type
     JSONPropStorage1: TJSONPropStorage;
     Label1: TLabel;
     Label2: TLabel;
+    Label3: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     Panel1: TPanel;
+    SpinEdit_chunk: TSpinEdit;
+    SpinEdit_buflen: TSpinEdit;
     SpinEdit_sync: TSpinEdit;
     Timer1: TTimer;
     UniqueInstance1: TUniqueInstance;
@@ -287,7 +289,7 @@ begin
   // store values
   JSONPropStorage1.WriteBoolean('priority', CheckBox_priority.Checked);
   JSONPropStorage1.WriteBoolean('modify', CheckBoxModConf.Checked);
-  JSONPropStorage1.WriteString('chunk_size', ComboBoxChunk.Text);
+  JSONPropStorage1.WriteInteger('chunk_size', SpinEdit_chunk.Value);
   JSONPropStorage1.WriteInteger('meta', ComboBox_meta.ItemIndex);
   JSONPropStorage1.WriteInteger('wait_video', boolToInt(
     CheckBox_waitvideo.Checked));
@@ -299,6 +301,7 @@ begin
   JSONPropStorage1.WriteBoolean('publishnotify', CheckBox_publishnotify.Checked
     );
   JSONPropStorage1.WriteInteger('sync',SpinEdit_sync.Value);
+  JSONPropStorage1.WriteInteger('sync',SpinEdit_buflen.Value);
 end;
 
 function StripInt(const s:string):Integer;
@@ -323,7 +326,6 @@ end;
 
 procedure TFormNginxtool.VerboseNginxConfig;
 var
- schunksize : string;
  workercount : Integer;
  chunk_modified : Boolean;
  IPBuf:array[0..254] of char;
@@ -337,11 +339,6 @@ var
 begin
  chunk_modified:=False;
  loglist.AddLog('----- nginx config -----');
- schunksize:=Trim(ComboBoxChunk.Text);
- if StrToIntDef(schunksize,0)=0 then begin
-   schunksize:='4096';
-   ComboBoxChunk.Text:=schunksize;
- end;
 
  configpar:=TNginxConfigParser.Create;
  try
@@ -441,13 +438,19 @@ begin
    end else if CheckBoxModConf.Checked then
      if SpinEdit_sync.Value<>StripInt(item.Value) then begin
        item.Value:=IntToStr(SpinEdit_sync.Value)+'ms;';
+       chunk_modified:=True;
      end;
    // buflen
    item:=itemgrp.FindItemName('buflen');
    if item=nil then begin
-     itemgrp.AddNameValue(itemgrp.Level+1,'buflen','1s;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'buflen','1000ms;');
      chunk_modified:=True;
-   end;
+   end else if CheckBoxModConf.Checked then
+     if SpinEdit_buflen.Value<>StripInt(item.Value) then begin
+       item.Value:=IntToStr(SpinEdit_buflen.Value)+'ms;';
+       chunk_modified:=True;
+     end;
+
    // publish_notify
    item:=itemgrp.FindItemName('publish_notify');
    if item=nil then begin
@@ -459,16 +462,32 @@ begin
 
    // chunk_size 8192;
    item:=itemgrp.FindItemName('chunk_size');
+   if item=nil then begin
+     item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'chunk_size',IntToStr(SpinEdit_chunk.Value)+';');
+     chunk_modified:=True;
+   end else if CheckBoxModConf.Checked then
+     if SpinEdit_chunk.Value<>StripInt(item.Value) then begin
+       item.Value:=IntToStr(SpinEdit_chunk.Value)+';';
+       chunk_modified:=True;
+     end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
+   // wait_key
+   item:=itemgrp.FindItemName('wait_key');
    if CheckBoxModConf.Checked then begin
      if item<>nil then begin
-       if Item.Value<>schunksize+';' then begin
-         item.Value:=schunksize+';';
+       if CheckOnOff(item,CheckBox_waitkey.Checked) then begin
+         if CheckBox_waitkey.Checked then begin
+           CheckBox_waitvideo.OnChange:=nil;
+           CheckBox_waitvideo.Checked:=True;
+           CheckBox_waitvideo.OnChange:=@CheckBox_ValueChange;
+         end;
          chunk_modified:=True;
        end;
-     end else
-     begin
+     end else begin
        if itemgrp<>nil then begin
-         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'chunk_size',schunksize+';');
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'wait_key',boolToOnOff(CheckBox_waitkey.Checked)+';');
          chunk_modified:=True;
        end;
      end;
@@ -485,22 +504,6 @@ begin
      end else begin
        if itemgrp<>nil then begin
          item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'wait_video',boolToOnOff(CheckBox_waitvideo.Checked)+';');
-         chunk_modified:=True;
-       end;
-     end;
-   end;
-   if item<>nil then
-     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
-
-   // wait_key
-   item:=itemgrp.FindItemName('wait_key');
-   if CheckBoxModConf.Checked then begin
-     if item<>nil then begin
-       if CheckOnOff(item,CheckBox_waitkey.Checked) then
-         chunk_modified:=True;
-     end else begin
-       if itemgrp<>nil then begin
-         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'wait_key',boolToOnOff(CheckBox_waitkey.Checked)+';');
          chunk_modified:=True;
        end;
      end;
@@ -698,7 +701,7 @@ begin
  if not Result then
    Result:=CheckBoxModConf.Checked<>JSONPropStorage1.ReadBoolean('modify',True);
  if not Result then
-   Result:=ComboBoxChunk.Text<>JSONPropStorage1.ReadString('chunk_size',ComboBoxChunk.Text);
+   Result:=SpinEdit_chunk.Value<>JSONPropStorage1.ReadInteger('chunk_size',SpinEdit_chunk.Value);
  if not Result then
    Result:=ComboBox_meta.ItemIndex<>JSONPropStorage1.ReadInteger('meta',ComboBox_meta.ItemIndex);
  if not Result then
@@ -715,6 +718,8 @@ begin
    Result:=CheckBox_publishnotify.Checked<>JSONPropStorage1.ReadBoolean('publishnotify',CheckBox_publishnotify.Checked);
  if not Result then
    Result:=SpinEdit_sync.Value<>JSONPropStorage1.ReadInteger('sync',SpinEdit_sync.Value);
+ if not Result then
+   Result:=SpinEdit_buflen.Value<>JSONPropStorage1.ReadInteger('buflen',SpinEdit_buflen.Value);
 end;
 
 procedure TFormNginxtool.NginxLogEndLine;
@@ -976,7 +981,7 @@ begin
     JSONPropStorage1.Restore;
     CheckBox_priority.Checked:=JSONPropStorage1.ReadBoolean('priority',False);
     CheckBoxModConf.Checked:=JSONPropStorage1.ReadBoolean('modify',True);
-    ComboBoxChunk.Text:=JSONPropStorage1.ReadString('chunk_size',ComboBoxChunk.Text);
+    SpinEdit_chunk.Value:=JSONPropStorage1.ReadInteger('chunk_size',SpinEdit_chunk.Value);
     ComboBox_meta.ItemIndex:=JSONPropStorage1.ReadInteger('meta',ComboBox_meta.ItemIndex);
     CheckBox_waitvideo.Checked:=JSONPropStorage1.ReadInteger('wait_video',boolToInt(CheckBox_waitvideo.Checked))<>0;
     CheckBox_waitkey.Checked:=JSONPropStorage1.ReadInteger('wait_key',boolToInt(CheckBox_waitkey.Checked))<>0;
@@ -985,10 +990,13 @@ begin
     CheckBox_sessionrelay.Checked:=JSONPropStorage1.ReadBoolean('sessionrelay',CheckBox_sessionrelay.Checked);
     CheckBox_publishnotify.Checked:=JSONPropStorage1.ReadBoolean('publishnotify',CheckBox_publishnotify.Checked);
     SpinEdit_sync.Value:=JSONPropStorage1.ReadInteger('sync',SpinEdit_sync.Value);
+    SpinEdit_buflen.Value:=JSONPropStorage1.ReadInteger('buflen',SpinEdit_buflen.Value);
   except
   end;
   SaveOptions;
   CheckBoxModConf.OnClick:=@CheckBoxModConfClick;
+  SpinEdit_chunk.OnChange:=@SpinEdit_syncChange;
+  SpinEdit_chunk.OnEditingDone:=@SpinEdit_syncChange;
   CheckBox_waitvideo.OnChange:=@CheckBox_ValueChange;
   CheckBox_waitkey.OnChange:=@CheckBox_ValueChange;
   CheckBox_idlestm.OnChange:=@CheckBox_ValueChange;
@@ -996,6 +1004,8 @@ begin
   CheckBox_publishnotify.OnChange:=@CheckBox_ValueChange;
   SpinEdit_sync.OnChange:=@SpinEdit_syncChange;
   SpinEdit_sync.OnEditingDone:=@SpinEdit_syncChange;
+  SpinEdit_buflen.OnChange:=@SpinEdit_syncChange;
+  SpinEdit_buflen.OnEditingDone:=@SpinEdit_syncChange;
   VerboseNginxConfig;
 
 end;
