@@ -16,6 +16,7 @@ type
     Button1: TButton;
     Button2: TButton;
     Button3: TButton;
+    CheckBox_interleave: TCheckBox;
     CheckBox_publishnotify: TCheckBox;
     CheckBox_sessionrelay: TCheckBox;
     CheckBox_idlestm: TCheckBox;
@@ -300,8 +301,11 @@ begin
   JSONPropStorage1.WriteBoolean('sessionrelay', CheckBox_sessionrelay.Checked);
   JSONPropStorage1.WriteBoolean('publishnotify', CheckBox_publishnotify.Checked
     );
+  JSONPropStorage1.WriteBoolean('interleave', CheckBox_interleave.Checked
+    );
   JSONPropStorage1.WriteInteger('sync',SpinEdit_sync.Value);
-  JSONPropStorage1.WriteInteger('sync',SpinEdit_buflen.Value);
+  JSONPropStorage1.WriteInteger('buflen',SpinEdit_buflen.Value);
+
 end;
 
 function StripInt(const s:string):Integer;
@@ -426,7 +430,6 @@ begin
      rtmpgrp.AddNameGroup(rtmpgrp.Level+1,'server','{');
      itemgrp:=rtmpgrp.FindItemGroup('server');
      itemgrp.AddNameValue(itemgrp.Level+1,'listen','1935;');
-     itemgrp.AddNameValue(itemgrp.Level+1,'chunk_size','4096;');
      itemgrp.MarkClose;
      chunk_modified:=True;
    end;
@@ -440,6 +443,9 @@ begin
        item.Value:=IntToStr(SpinEdit_sync.Value)+'ms;';
        chunk_modified:=True;
      end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
    // buflen
    item:=itemgrp.FindItemName('buflen');
    if item=nil then begin
@@ -450,6 +456,8 @@ begin
        item.Value:=IntToStr(SpinEdit_buflen.Value)+'ms;';
        chunk_modified:=True;
      end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
    // publish_notify
    item:=itemgrp.FindItemName('publish_notify');
@@ -542,6 +550,18 @@ begin
      itemgrp.MarkClose;
      chunk_modified:=True;
    end;
+   // interleave
+   item:=itemgrp.FindItemName('interleave');
+   if item=nil then begin
+     itemgrp.AddNameValue(itemgrp.Level+1,'interleave','off;');
+     chunk_modified:=True;
+   end else if CheckBoxModConf.Checked then begin
+     if CheckOnOff(item,CheckBox_interleave.Checked) then
+       chunk_modified:=True;
+   end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
    // idle_streams
    item:=itemgrp.FindItemName('idle_streams');
    if item=nil then begin
@@ -551,6 +571,9 @@ begin
      if CheckOnOff(item,CheckBox_idlestm.Checked) then
        chunk_modified:=True;
    end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
    // session_relay
    item:=itemgrp.FindItemName('session_relay');
    if item=nil then begin
@@ -560,6 +583,8 @@ begin
      if CheckOnOff(item,CheckBox_sessionrelay.Checked) then
        chunk_modified:=True;
    end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
    // push check and update
    if itemgrp<>nil then begin
@@ -716,6 +741,8 @@ begin
    Result:=CheckBox_sessionrelay.Checked<>JSONPropStorage1.ReadBoolean('sessionrelay',CheckBox_sessionrelay.Checked);
  if not Result then
    Result:=CheckBox_publishnotify.Checked<>JSONPropStorage1.ReadBoolean('publishnotify',CheckBox_publishnotify.Checked);
+ if not Result then
+   Result:=CheckBox_interleave.Checked<>JSONPropStorage1.ReadBoolean('interleave',CheckBox_interleave.Checked);
  if not Result then
    Result:=SpinEdit_sync.Value<>JSONPropStorage1.ReadInteger('sync',SpinEdit_sync.Value);
  if not Result then
@@ -989,6 +1016,7 @@ begin
     CheckBox_idlestm.Checked:=JSONPropStorage1.ReadBoolean('idlestreams',CheckBox_idlestm.Checked);
     CheckBox_sessionrelay.Checked:=JSONPropStorage1.ReadBoolean('sessionrelay',CheckBox_sessionrelay.Checked);
     CheckBox_publishnotify.Checked:=JSONPropStorage1.ReadBoolean('publishnotify',CheckBox_publishnotify.Checked);
+    CheckBox_interleave.Checked:=JSONPropStorage1.ReadBoolean('interleave',CheckBox_interleave.Checked);
     SpinEdit_sync.Value:=JSONPropStorage1.ReadInteger('sync',SpinEdit_sync.Value);
     SpinEdit_buflen.Value:=JSONPropStorage1.ReadInteger('buflen',SpinEdit_buflen.Value);
   except
@@ -997,6 +1025,7 @@ begin
   CheckBoxModConf.OnClick:=@CheckBoxModConfClick;
   SpinEdit_chunk.OnChange:=@SpinEdit_syncChange;
   SpinEdit_chunk.OnEditingDone:=@SpinEdit_syncChange;
+  CheckBox_interleave.OnChange:=@CheckBox_ValueChange;
   CheckBox_waitvideo.OnChange:=@CheckBox_ValueChange;
   CheckBox_waitkey.OnChange:=@CheckBox_ValueChange;
   CheckBox_idlestm.OnChange:=@CheckBox_ValueChange;

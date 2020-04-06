@@ -128,7 +128,7 @@ object FormNginxtool: TFormNginxtool
       Width = 464
       OnExit = EdRtmpExit
       OnKeyPress = EdRtmpKeyPress
-      TabOrder = 12
+      TabOrder = 13
     end
     object EdRtmp2: TEdit
       Left = 64
@@ -137,7 +137,7 @@ object FormNginxtool: TFormNginxtool
       Width = 464
       OnExit = EdRtmpExit
       OnKeyPress = EdRtmpKeyPress
-      TabOrder = 13
+      TabOrder = 14
     end
     object EdRtmp3: TEdit
       Left = 64
@@ -146,7 +146,7 @@ object FormNginxtool: TFormNginxtool
       Width = 464
       OnExit = EdRtmpExit
       OnKeyPress = EdRtmpKeyPress
-      TabOrder = 14
+      TabOrder = 15
     end
     object Label6: TLabel
       Left = 14
@@ -223,7 +223,7 @@ object FormNginxtool: TFormNginxtool
       Increment = 10
       MaxValue = 10000
       MinValue = 10
-      TabOrder = 11
+      TabOrder = 12
       Value = 1000
     end
     object Label3: TLabel
@@ -244,6 +244,14 @@ object FormNginxtool: TFormNginxtool
       MinValue = 512
       TabOrder = 2
       Value = 4096
+    end
+    object CheckBox_interleave: TCheckBox
+      Left = 256
+      Height = 19
+      Top = 96
+      Width = 71
+      Caption = 'interleave'
+      TabOrder = 11
     end
   end
   object Button3: TButton

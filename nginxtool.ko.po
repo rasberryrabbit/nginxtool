@@ -25,6 +25,10 @@ msgstr "설정 파일 수정"
 msgid "idle_streams"
 msgstr ""
 
+#: tformnginxtool.checkbox_interleave.caption
+msgid "interleave"
+msgstr ""
+
 #: tformnginxtool.checkbox_priority.caption
 msgid "Above Normal Priority"
 msgstr "우선도 보통 이상"
