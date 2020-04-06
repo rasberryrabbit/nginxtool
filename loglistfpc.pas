@@ -245,7 +245,7 @@ begin
   cPos := GetItemIndex; // FLastPosY updated
   cPointY:=cPos*tHeight+BorderWidth;
   cPointX:=BorderWidth-FLastPosX;
-  ViewHeight:=HorzScrollBar.ClientSizeWithBar;
+  ViewHeight:=HorzScrollBar.ClientSizeWithoutBar;
   while cPos<Count do begin
     cstr:=LogData.GetStrObj(cPos,_LogMaxCharLen,temp);
     if temp<>nil then begin
