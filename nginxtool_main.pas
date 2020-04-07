@@ -425,6 +425,7 @@ begin
      rtmpgrp:=rtmpgrp.FindItemGroup('location');
      rtmpgrp.MarkClose;
      rtmpgrp.AddNameValue(rtmpgrp.Level+1,'rtmp_stat','all;');
+     rtmpgrp.AddNameValue(rtmpgrp.Level+1,'rtmp_stat_stylesheet','/style.xsl;');
      chunk_modified:=True;
    end;
 
