@@ -340,6 +340,7 @@ var
  itemidx:Integer;
  i,k:Integer;
  dHandle: THANDLE;
+ stemp:string;
 begin
  chunk_modified:=False;
  loglist.AddLog('----- nginx config -----');
@@ -359,7 +360,7 @@ begin
    // check 'worker_process 1;'
    item:=configpar.ItemList.FindItemName('worker_processes');
    if item<>nil then begin
-     workercount:=StrToIntDef(Copy(item.Value,1,Length(item.Value)-1),0);
+     workercount:=StripInt(item.Value);
      if CheckBoxModConf.Checked then
        if workercount<>1 then begin
          item.Value:='1;';
@@ -385,10 +386,13 @@ begin
    end;
    if CheckBoxModConf.Checked then begin
      if workercount<2 then
-       item.Value:='off;'
+       stemp:='off;'
        else
-         item.Value:='on;';
-     chunk_modified:=True;
+         stemp:='on;';
+     if not SameText(item.Value,stemp) then begin
+       item.Value:=stemp;
+       chunk_modified:=True;
+     end;
    end;
    loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
@@ -404,6 +408,23 @@ begin
    item:=itemgrp.FindItemName('worker_connections');
    if item=nil then begin
      itemgrp.AddNameValue(itemgrp.Level+1,'worker_connections','1024;');
+     chunk_modified:=True;
+   end;
+
+   // ----- http -----
+   rtmpgrp:=configpar.ItemList.FindItemGroup('http');
+   if rtmpgrp=nil then begin
+     configpar.ItemList.AddNameGroup(0,'http','{');
+     rtmpgrp:=configpar.ItemList.FindItemGroup('http');
+     rtmpgrp.MarkClose;
+     rtmpgrp.AddNameGroup(rtmpgrp.Level+1,'server','{');
+     rtmpgrp:=rtmpgrp.FindItemGroup('server');
+     rtmpgrp.MarkClose;
+     rtmpgrp.AddNameValue(rtmpgrp.Level+1,'listen','8080;');
+     rtmpgrp.AddNameGroup(rtmpgrp.Level+1,'location','/stat {');
+     rtmpgrp:=rtmpgrp.FindItemGroup('location');
+     rtmpgrp.MarkClose;
+     rtmpgrp.AddNameValue(rtmpgrp.Level+1,'rtmp_stat','all;');
      chunk_modified:=True;
    end;
 
