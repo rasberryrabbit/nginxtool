@@ -125,7 +125,7 @@ function NginxRemoveTrailValue(const s:string; delim:char=';'):string;
 implementation
 
 uses
-  strutils;
+  strutils, LazUTF8Classes;
 
 
 function NginxRemoveTrailValue(const s: string; delim: char): string;
@@ -315,9 +315,9 @@ end;
 // utf8
 procedure TNginxConfigParser.Load(FileName: string);
 var
-  fsFile:TFileStream;
+  fsFile:TFileStreamUTF8;
 begin
-  fsFile:=TFileStream.Create(UTF8Decode(FileName),fmOpenRead);
+  fsFile:=TFileStreamUTF8.Create(FileName,fmOpenRead);
   try
     LoadFromStream(fsFile);
   finally
@@ -338,9 +338,9 @@ end;
 // utf8
 procedure TNginxConfigParser.Save(FileName: string);
 var
-  fsFile:TFileStream;
+  fsFile:TFileStreamUTF8;
 begin
-  fsFile:=TFileStream.Create(UTF8Decode(FileName),fmCreate or fmOpenWrite);
+  fsFile:=TFileStreamUTF8.Create(FileName,fmCreate or fmOpenWrite);
   try
     SaveToStream(fsFile);
   finally

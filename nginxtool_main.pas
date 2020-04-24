@@ -78,7 +78,7 @@ implementation
 
 uses
   {$ifdef WINDOWS}windows,{$endif} loglistfpc, sockets, RegExpr, process {$ifdef WINDOWS}, JwaPsApi{$endif},
-  DefaultTranslator;
+  DefaultTranslator, LazUTF8Classes;
 
 var
   loglist:TLogListFPC;
@@ -774,7 +774,7 @@ procedure TFormNginxtool.NginxLogEndLine;
 const
  ngxLogFile = './logs/error.log';
 var
- fs : TFileStream;
+ fs : TFileStreamUTF8;
  l : int64;
  i, j : Integer;
  buf : array[0..1024] of char;
@@ -782,7 +782,7 @@ begin
  if not FileExists(ngxLogFile) then
    exit;
  try
-   fs := TFileStream.Create(ngxLogFile,fmOpenRead or fmShareDenyNone);
+   fs := TFileStreamUTF8.Create(ngxLogFile,fmOpenRead or fmShareDenyNone);
    try
      l:=fs.Size;
      if l>1024 then
