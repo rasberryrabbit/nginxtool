@@ -80,7 +80,7 @@ implementation
 
 uses
   {$ifdef WINDOWS}windows,{$endif} loglistfpc, sockets, RegExpr, process {$ifdef WINDOWS}, JwaPsApi{$endif},
-  DefaultTranslator, LazUTF8Classes, LazFileUtils;
+  DefaultTranslator, LazUTF8Classes, LazFileUtils, DateUtils;
 
 var
   loglist:TLogListFPC;
@@ -92,6 +92,8 @@ var
   nginx_process_find:Integer=0;
   doUpdatePush: Boolean = False;
   bGotNginxLog: Boolean = True;
+  runtime:TDateTime;
+  dateconf:TFormatSettings;
 
 
 {$R *.lfm}
@@ -785,6 +787,7 @@ var
  l : int64;
  i, j : Integer;
  buf : array[0..1024] of char;
+ logtime : TDateTime;
 begin
  if bGotNginxLog or (not FileExistsUTF8(ngxLogFile)) then
    exit;
@@ -816,7 +819,9 @@ begin
        end;
        Dec(i);
      end;
-     loglist.AddLog('log: '+pchar(UTF8Encode(UnicodeString(Copy(buf,i,1024)))));
+     logtime:=StrToDateTime(Copy(buf,i,20));
+     if WithinPastSeconds(logtime,runtime,1) then
+       loglist.AddLog('log: '+pchar(UTF8Encode(UnicodeString(Copy(buf,i,1024)))));
    end;
    bGotNginxLog:=True;
  except
@@ -827,6 +832,7 @@ end;
 
 procedure TFormNginxtool.FormCreate(Sender: TObject);
 begin
+  DateSeparator:='/';
   loglist:=TLogListFPC.Create(Self);
   loglist.Name:='loglist1';
   loglist.Parent:=Panel1;
@@ -854,6 +860,7 @@ var
   i: integer;
 begin
   bGotNginxLog:=False;
+  runtime:=Now;
   {$ifdef WINDOWS}
   if checkEnumProcess('nginx.exe') then begin
      loglist.AddLog('> Already running! Try reloading.');
@@ -900,6 +907,7 @@ var
   myprocess:TProcess;
   i: integer;
 begin
+  runtime:=Now;
   bGotNginxLog:=False;
   {$ifdef WINDOWS}
   if not checkEnumProcess('nginx.exe') then begin
@@ -935,6 +943,7 @@ var
   myprocess: TProcess;
   i: integer;
 begin
+  runtime:=Now;
   bGotNginxLog:=False;
   {$ifdef WINDOWS}
   if not checkEnumProcess('nginx.exe') then begin
