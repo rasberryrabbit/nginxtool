@@ -1,17 +1,22 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
-#: tformnginxtool.button1.caption
+#: tformnginxtool.buttonreload.caption
+msgctxt "tformnginxtool.buttonreload.caption"
+msgid "&Reload"
+msgstr ""
+
+#: tformnginxtool.buttonstart.caption
+#, fuzzy
+msgctxt "tformnginxtool.buttonstart.caption"
 msgid "&Start"
 msgstr "시작(&S)"
 
-#: tformnginxtool.button2.caption
+#: tformnginxtool.buttonstop.caption
+#, fuzzy
+msgctxt "tformnginxtool.buttonstop.caption"
 msgid "Sto&p"
 msgstr "중단(&p)"
-
-#: tformnginxtool.button3.caption
-msgid "&Reload"
-msgstr ""
 
 #: tformnginxtool.caption
 msgid "nginx rtmp tool"

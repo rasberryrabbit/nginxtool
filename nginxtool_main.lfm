@@ -20,22 +20,22 @@ object FormNginxtool: TFormNginxtool
     BevelOuter = bvLowered
     TabOrder = 4
   end
-  object Button1: TButton
+  object ButtonStart: TButton
     Left = 16
     Height = 25
     Top = 256
     Width = 112
     Caption = '&Start'
-    OnClick = Button1Click
+    OnClick = ButtonStartClick
     TabOrder = 1
   end
-  object Button2: TButton
+  object ButtonStop: TButton
     Left = 152
     Height = 25
     Top = 256
     Width = 123
     Caption = 'Sto&p'
-    OnClick = Button2Click
+    OnClick = ButtonStopClick
     TabOrder = 2
   end
   object GroupBox1: TGroupBox
@@ -254,13 +254,13 @@ object FormNginxtool: TFormNginxtool
       TabOrder = 11
     end
   end
-  object Button3: TButton
+  object ButtonReload: TButton
     Left = 304
     Height = 25
     Top = 256
     Width = 123
     Caption = '&Reload'
-    OnClick = Button3Click
+    OnClick = ButtonReloadClick
     TabOrder = 3
   end
   object Label7: TLabel
@@ -295,6 +295,11 @@ object FormNginxtool: TFormNginxtool
     StoredValues = <>
     Formatted = True
     Left = 440
+    Top = 192
+  end
+  object TimerLog: TTimer
+    OnTimer = TimerLogTimer
+    Left = 504
     Top = 192
   end
 end

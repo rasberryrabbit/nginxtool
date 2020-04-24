@@ -13,9 +13,9 @@ type
   { TFormNginxtool }
 
   TFormNginxtool = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
-    Button3: TButton;
+    ButtonStart: TButton;
+    ButtonStop: TButton;
+    ButtonReload: TButton;
     CheckBox_interleave: TCheckBox;
     CheckBox_publishnotify: TCheckBox;
     CheckBox_sessionrelay: TCheckBox;
@@ -44,10 +44,11 @@ type
     SpinEdit_buflen: TSpinEdit;
     SpinEdit_sync: TSpinEdit;
     Timer1: TTimer;
+    TimerLog: TTimer;
     UniqueInstance1: TUniqueInstance;
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
+    procedure ButtonStartClick(Sender: TObject);
+    procedure ButtonStopClick(Sender: TObject);
+    procedure ButtonReloadClick(Sender: TObject);
     procedure CheckBoxModConfClick(Sender: TObject);
     procedure CheckBox_ValueChange(Sender: TObject);
     procedure ComboBoxChunkCloseUp(Sender: TObject);
@@ -60,6 +61,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure SpinEdit_syncChange(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
+    procedure TimerLogTimer(Sender: TObject);
   private
     function CheckOnOff(item: TNginxItem; b: Boolean): Boolean;
   public
@@ -89,6 +91,7 @@ var
   ppval:DWORD;
   nginx_process_find:Integer=0;
   doUpdatePush: Boolean = False;
+  bGotNginxLog: Boolean = True;
 
 
 {$R *.lfm}
@@ -242,8 +245,12 @@ begin
  {$else}
    Timer1.Enabled:=False;
  {$endif}
- if not Timer1.Enabled then
-   NginxLogEndLine;
+end;
+
+procedure TFormNginxtool.TimerLogTimer(Sender: TObject);
+begin
+  NginxLogEndLine;
+  TimerLog.Enabled:=False;
 end;
 
 
@@ -779,7 +786,7 @@ var
  i, j : Integer;
  buf : array[0..1024] of char;
 begin
- if not FileExistsUTF8(ngxLogFile) then
+ if bGotNginxLog or (not FileExistsUTF8(ngxLogFile)) then
    exit;
  try
    fs := TFileStreamUTF8.Create(ngxLogFile,fmOpenRead or fmShareDenyNone);
@@ -809,8 +816,9 @@ begin
        end;
        Dec(i);
      end;
-     loglist.AddLog('log: '+Copy(buf,i,1024));
+     loglist.AddLog('log: '+pchar(UTF8Encode(UnicodeString(Copy(buf,i,1024)))));
    end;
+   bGotNginxLog:=True;
  except
    on e:exception do
      loglist.AddLog('log: '+e.Message);
@@ -840,15 +848,16 @@ begin
   end;
 end;
 
-procedure TFormNginxtool.Button1Click(Sender: TObject);
+procedure TFormNginxtool.ButtonStartClick(Sender: TObject);
 var
   myprocess:TProcess;
   i: integer;
 begin
+  bGotNginxLog:=False;
   {$ifdef WINDOWS}
   if checkEnumProcess('nginx.exe') then begin
      loglist.AddLog('> Already running! Try reloading.');
-     Button3Click(Sender);
+     ButtonReloadClick(Sender);
      exit;
   end;
   {$endif}
@@ -875,6 +884,7 @@ begin
       myprocess.Execute;
       nginx_process_find:=0;
       Timer1.Enabled:=True;
+      TimerLog.Enabled:=True;
       loglist.AddLog('> nginx started');
     except
       on e:exception do
@@ -885,11 +895,12 @@ begin
   end;
 end;
 
-procedure TFormNginxtool.Button2Click(Sender: TObject);
+procedure TFormNginxtool.ButtonStopClick(Sender: TObject);
 var
   myprocess:TProcess;
   i: integer;
 begin
+  bGotNginxLog:=False;
   {$ifdef WINDOWS}
   if not checkEnumProcess('nginx.exe') then begin
      loglist.AddLog('> nginx is not running');
@@ -908,6 +919,7 @@ begin
     myprocess.Parameters.Add('stop');
     try
       myprocess.Execute;
+      TimerLog.Enabled:=True;
       loglist.AddLog('> nginx stopped');
     except
       on e:exception do
@@ -918,11 +930,12 @@ begin
   end;
 end;
 
-procedure TFormNginxtool.Button3Click(Sender: TObject);
+procedure TFormNginxtool.ButtonReloadClick(Sender: TObject);
 var
   myprocess: TProcess;
   i: integer;
 begin
+  bGotNginxLog:=False;
   {$ifdef WINDOWS}
   if not checkEnumProcess('nginx.exe') then begin
      loglist.AddLog('> nginx is not running');
@@ -954,6 +967,7 @@ begin
       myprocess.Execute;
       nginx_process_find:=0;
       Timer1.Enabled:=True;
+      TimerLog.Enabled:=True;
       loglist.AddLog('> nginx reloaded');
     except
       on e:exception do
