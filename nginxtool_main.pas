@@ -78,7 +78,7 @@ implementation
 
 uses
   {$ifdef WINDOWS}windows,{$endif} loglistfpc, sockets, RegExpr, process {$ifdef WINDOWS}, JwaPsApi{$endif},
-  DefaultTranslator, LazUTF8Classes;
+  DefaultTranslator, LazUTF8Classes, LazFileUtils;
 
 var
   loglist:TLogListFPC;
@@ -779,7 +779,7 @@ var
  i, j : Integer;
  buf : array[0..1024] of char;
 begin
- if not FileExists(ngxLogFile) then
+ if not FileExistsUTF8(ngxLogFile) then
    exit;
  try
    fs := TFileStreamUTF8.Create(ngxLogFile,fmOpenRead or fmShareDenyNone);
