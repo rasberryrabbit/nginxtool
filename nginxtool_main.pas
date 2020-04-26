@@ -82,6 +82,9 @@ uses
   {$ifdef WINDOWS}windows,{$endif} loglistfpc, sockets, RegExpr, process {$ifdef WINDOWS}, JwaPsApi{$endif},
   DefaultTranslator, LazUTF8Classes, LazFileUtils, DateUtils;
 
+const
+  ngxLogFile = './logs/error.log';
+
 var
   loglist:TLogListFPC;
   {$ifdef WINDOWS}
@@ -93,7 +96,7 @@ var
   doUpdatePush: Boolean = False;
   bGotNginxLog: Boolean = True;
   runtime:TDateTime;
-  dateconf:TFormatSettings;
+  errorlog_path:string = ngxLogFile;
 
 
 {$R *.lfm}
@@ -337,6 +340,22 @@ begin
  Result:=StrToIntDef(buf,0);
 end;
 
+function GetFirstOption(const s:string):string;
+var
+  i, l: Integer;
+begin
+  Result:='';
+  l:=Length(s);
+  i:=1;
+  while i<=l do begin
+    if (s[i]<=#32) or (s[i]=';') then begin
+      Result:=Copy(s,1,i-1);
+      break;
+    end;
+    Inc(i);
+  end;
+end;
+
 procedure TFormNginxtool.VerboseNginxConfig;
 var
  workercount : Integer;
@@ -365,6 +384,13 @@ begin
 
    // open
    configpar.Load('conf/nginx.conf');
+
+   item:=configpar.ItemList.FindItemName('error_log');
+   if item<>nil then begin
+     stemp:=GetFirstOption(item.Value);
+     if stemp<>'' then
+       errorlog_path:=stemp;
+   end;
 
    // check 'worker_process 1;'
    item:=configpar.ItemList.FindItemName('worker_processes');
@@ -780,8 +806,6 @@ begin
 end;
 
 procedure TFormNginxtool.NginxLogEndLine;
-const
- ngxLogFile = './logs/error.log';
 var
  fs : TFileStreamUTF8;
  l : int64;
@@ -789,10 +813,10 @@ var
  buf : array[0..1024] of char;
  logtime : TDateTime;
 begin
- if bGotNginxLog or (not FileExistsUTF8(ngxLogFile)) then
+ if bGotNginxLog or (not FileExistsUTF8(errorlog_path)) then
    exit;
  try
-   fs := TFileStreamUTF8.Create(ngxLogFile,fmOpenRead or fmShareDenyNone);
+   fs := TFileStreamUTF8.Create(errorlog_path,fmOpenRead or fmShareDenyNone);
    try
      l:=fs.Size;
      if l>1024 then
