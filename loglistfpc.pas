@@ -51,8 +51,9 @@ type
 
   TLogStringList = class(TStringList)
     private
-      DefaultTCol, DefaultBCol : TColor;
+      DefaultTCol, DefaultBCol: TColor;
       fEvent:TEvent;
+      FOnChanged: TNotifyEvent;
       procedure Enter;
       procedure Leave;
     protected
@@ -64,14 +65,16 @@ type
       procedure InsertItem(Index: Integer; const S: string; O: TObject);
         override;
       procedure Clear; override;
+      procedure Changed; override;
     public
       constructor Create;
       destructor Destroy; override;
 
       function GetStrObj(Index, MaxLen:Integer; out obj:TLogStringData):string;
 
-      property TCol : TColor read DefaultTCol write DefaultTCol;
-      property BCol : TColor read DefaultBCol write DefaultBCol;
+      property TCol: TColor read DefaultTCol write DefaultTCol;
+      property BCol: TColor read DefaultBCol write DefaultBCol;
+      property OnChanged: TNotifyEvent read FOnChanged write FOnChanged;
   end;
 
   { TLogListFPC }
@@ -86,7 +89,7 @@ type
       FEvent : TEvent;
       FOnDeleteLimit : TEventLogDeleteLimit;
       FTimer : TTimer;
-      FAddFlag, FSkipLast, FIsViewHorz, FUpdated : Boolean;
+      FAddFlag, FSkipLast, FIsViewHorz, FUpdated, FLastHBar : Boolean;
 
       function GetCount:Integer;
       procedure SetItemIndex(Value : Integer);
@@ -95,6 +98,7 @@ type
       procedure OnTimer(Sender : TObject);
       procedure CheckTextLen(const s: string);
       procedure SetLineSpace(AValue: Integer);
+      procedure DataChange(Sender: TObject);
     protected
       procedure Paint; override;
       procedure FontChanged(Sender: TObject); override;
@@ -163,11 +167,13 @@ end;
 
 function TLogListFPC.GetItemIndex: Integer;
 begin
-  if Assigned(VertScrollBar) then begin
+  if VertScrollBar.Visible then begin
     FLastPosY:=VertScrollBar.Position;
     Result:=FLastPosY div tHeight;
-  end else
+  end else begin
+    FLastPosY:=0;
     Result:=0;
+  end;
 end;
 
 procedure TLogListFPC.SetHPos(Pos: Integer);
@@ -183,19 +189,14 @@ procedure TLogListFPC.OnTimer(Sender: TObject);
 var
   CurCount, NewRange : Integer;
 begin
-  CurCount:=Count;
-  if PrevCount<>CurCount then
-     if Assigned(VertScrollBar) then begin
-        PrevCount:=CurCount;
-        NewRange:=CurCount * tHeight;
-        VertScrollBar.Range:=NewRange;
-        FUpdated:=True;
-     end;
+  if FUpdated then
+    if VertScrollBar.Visible then
+      VertScrollBar.Range:=Count * tHeight;
   if FAddFlag then begin
     FAddFlag:=False;
     FUpdated:=True;
     if not FSkipLast then
-       SetLastPos;
+      SetLastPos;
   end;
   if FUpdated and (FEvent.WaitFor(0)=wrSignaled) then begin
     FUpdated:=False;
@@ -211,7 +212,7 @@ begin
   if MaxTextWidth<txtWidth then begin
      MaxTextWidth:=txtWidth;
 
-     HorzScrollBar.Range:=(MaxTextWidth+BorderWidth+tWidth) div 2;
+     HorzScrollBar.Range:=(MaxTextWidth+tWidth) div 2;
      FIsViewHorz:=True;
      FUpdated:=True;
   end;
@@ -228,6 +229,11 @@ begin
   FUpdated:=True;
 end;
 
+procedure TLogListFPC.DataChange(Sender: TObject);
+begin
+  FUpdated:=True;
+end;
+
 
 procedure TLogListFPC.Paint;
 var
@@ -236,17 +242,18 @@ var
   temp : TLogStringData;
   SRect : TRect;
 begin
-  FEvent.ResetEvent;
+  if Canvas.TryLock then begin
   try
   Canvas.Brush.Color:=Color;
   SRect:=GetScrolledClientRect;
   Canvas.FillRect(SRect);
   FLastPosX:=HorzScrollBar.Position;
-  cPos := GetItemIndex; // FLastPosY updated
-  cPointY:=cPos*tHeight+BorderWidth;
+  cPos:=GetItemIndex; // FLastPosY updated
+  cPointY:=cPos*tHeight;
   cPointX:=BorderWidth-FLastPosX;
   ViewHeight:=HorzScrollBar.ClientSizeWithoutBar;
   while cPos<Count do begin
+    while (FEvent.WaitFor(0)=wrTimeout) do Sleep(0);
     cstr:=LogData.GetStrObj(cPos,_LogMaxCharLen,temp);
     if temp<>nil then begin
       Canvas.Brush.Color:=temp.B;
@@ -263,14 +270,18 @@ begin
     Inc(cPos);
   end;
   Canvas.Brush.Color:=Color;
-  Canvas.FillRect(SRect.Left,SRect.Top,SRect.Left+BorderWidth-1,SRect.Bottom);
+  Canvas.FillRect(SRect.Left,SRect.Top,SRect.Left+1,SRect.Bottom);
   if Focused then
      Canvas.Brush.Color:=clHighlight
      else Canvas.Brush.Color:=clInactiveBorder;
-  Canvas.FillRect(SRect.Left,SRect.Top,SRect.Left+BorderWidth-2,SRect.Bottom);
+  Canvas.FillRect(SRect.Left,SRect.Top,SRect.Left+1,SRect.Bottom);
   finally
-    FEvent.SetEvent;
+    Canvas.Unlock;
   end;
+  end;
+  if HorzScrollBar.IsScrollBarVisible<>FLastHBar then
+    DoOnResize;
+  FLastHBar:=HorzScrollBar.IsScrollBarVisible;
   inherited Paint;
 end;
 
@@ -346,33 +357,36 @@ end;
 constructor TLogListFPC.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
+  BorderStyle:=bsSingle;
   if Parent=nil then Parent:=TWinControl(AOwner);
   FLineSpace:=2;
-  BorderWidth:=5;
+  BorderWidth:=2;
   FAddFlag:=False;
   FSkipLast:=False;
   FIsViewHorz:=False;
-  FLineLimit:=1000;
+  FLineLimit:=100;
   FOnDeleteLimit:=nil;
   PrevCount:=-1;
   FLastPosY:=0;
   FLastPosX:=0;
   LogData := TLogStringList.Create;
-  FEvent := TEvent.Create(nil,True,True,'LOGLIST'+IntToStr(GetTickCount));
+  LogData.OnChanged:=@DataChange;
+  FEvent := TEvent.Create(nil,True,True,'LOGLIST'+IntToStr(Random(65535)));
   FontChanged(Self);
   LogData.DefaultBCol:=Color;
   LogData.DefaultTCol:=Font.Color;
   FTimer:=TTimer.Create(self);
   FTimer.OnTimer:=@OnTimer;
   FTimer.Interval:=100;
-  FLineLimit:=1000;
   FUpdated:=True;
+  FLastHBar:=HorzScrollBar.IsScrollBarVisible;
 end;
 
 destructor TLogListFPC.Destroy;
 begin
   FTimer.OnTimer:=nil;
   LogData.Free;
+  FEvent.SetEvent;
   FEvent.Free;
   inherited Destroy;
 end;
@@ -402,8 +416,13 @@ end;
 procedure TLogListFPC.SetLastPos;
 begin
   if Assigned(VertScrollBar) then begin
-    VertScrollBar.Position:=VertScrollBar.Range;
-    FUpdated:=True;
+    Enter;
+    try
+      VertScrollBar.Position:=VertScrollBar.Range;
+      FUpdated:=True;
+    finally
+      Leave;
+    end;
   end;
 end;
 
@@ -679,17 +698,25 @@ begin
   end;
 end;
 
+procedure TLogStringList.Changed;
+begin
+  inherited Changed;
+  if Assigned(FOnChanged) then
+     FOnChanged(Self);
+end;
+
 constructor TLogStringList.Create;
 begin
   inherited;
   DefaultBCol:=clBtnFace;
   DefaultTCol:=clWindowText;
   OwnsObjects:=True;
-  fEvent:=TEvent.Create(nil,True,True,'LOGSTRLST'+IntToStr(GetTickCount));
+  fEvent:=TEvent.Create(nil,True,True,'LOGSTRLST'+IntToStr(Random(65535)));
 end;
 
 destructor TLogStringList.Destroy;
 begin
+  fEvent.SetEvent;
   fEvent.Free;
   inherited Destroy;
 end;
@@ -697,16 +724,11 @@ end;
 function TLogStringList.GetStrObj(Index, MaxLen: Integer; out
   obj: TLogStringData): string;
 begin
-  Enter;
   try
-    Result:=Copy(inherited Get(Index),1,MaxLen);
-    try
-      obj:=TLogStringData(inherited GetObject(Index));
-    except
-      obj:=nil;
-    end;
-  finally
-    Leave;
+    Result:=Copy(Get(Index),1,MaxLen);
+    obj:=TLogStringData(GetObject(Index));
+  except
+    obj:=nil;
   end;
 end;
 
