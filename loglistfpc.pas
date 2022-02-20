@@ -194,7 +194,6 @@ begin
       VertScrollBar.Range:=Count * tHeight;
   if FAddFlag then begin
     FAddFlag:=False;
-    FUpdated:=True;
     if not FSkipLast then
       SetLastPos;
   end;
@@ -291,7 +290,7 @@ begin
   tHeight:=Canvas.TextHeight('hj');
   Inc(tHeight,FLineSpace);
   if tHeight=0 then tHeight:=1;
-  tWidth:=Canvas.TextWidth('F');
+  tWidth:=Canvas.TextWidth('W');
   tItems:=ClientHeight div tHeight;
   FUpdated:=True;
   OnTimer(Self);
@@ -301,9 +300,9 @@ procedure TLogListFPC.DoOnResize;
 begin
   inherited DoOnResize;
   if Assigned(VertScrollBar) then
-     VertScrollBar.Page:=ClientHeight div tHeight * tHeight;
+    VertScrollBar.Page:=ClientHeight;// div tHeight * tHeight;
   if Assigned(HorzScrollBar) then
-     HorzScrollBar.Page:=ClientWidth div 2;
+    HorzScrollBar.Page:=ClientWidth div 2;
   FUpdated:=True;
 end;
 
