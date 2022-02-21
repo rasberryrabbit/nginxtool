@@ -251,7 +251,6 @@ begin
   cPointX:=BorderWidth-FLastPosX;
   ViewHeight:=HorzScrollBar.ClientSizeWithoutBar;
   while cPos<Count do begin
-    while (FEvent.WaitFor(0)=wrTimeout) do Sleep(0);
     cstr:=LogData.GetStrObj(cPos,_LogMaxCharLen,temp);
     if temp<>nil then begin
       Canvas.Brush.Color:=temp.B;
@@ -307,6 +306,7 @@ begin
     HorzScrollBar.Page:=ClientWidth div 2;
   FLastCHeight:=ClientHeight;
   FUpdated:=True;
+  OnTimer(Self);
 end;
 
 procedure TLogListFPC.KeyDown(var Key: Word; Shift: TShiftState);
