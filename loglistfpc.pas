@@ -210,7 +210,7 @@ begin
   if MaxTextWidth<txtWidth then begin
      MaxTextWidth:=txtWidth;
 
-     HorzScrollBar.Range:=(MaxTextWidth+tWidth) div 2;
+     HorzScrollBar.Range:=MaxTextWidth;
      FIsViewHorz:=True;
      FUpdated:=True;
   end;
@@ -235,7 +235,7 @@ end;
 
 procedure TLogListFPC.Paint;
 var
-  cPos, cPointY, cPointX, ViewHeight : Integer;
+  cPos, cPointY, ViewHeight : Integer;
   cstr : string;
   temp : TLogStringData;
   SRect : TRect;
@@ -248,7 +248,6 @@ begin
   FLastPosX:=HorzScrollBar.Position;
   cPos:=GetItemIndex; // FLastPosY updated
   cPointY:=cPos*tHeight;
-  cPointX:=BorderWidth-FLastPosX;
   ViewHeight:=HorzScrollBar.ClientSizeWithoutBar;
   while cPos<Count do begin
     cstr:=LogData.GetStrObj(cPos,_LogMaxCharLen,temp);
@@ -256,7 +255,7 @@ begin
       Canvas.Brush.Color:=temp.B;
       Canvas.Font.Color:=temp.F;
     end;
-    Canvas.TextRect(SRect,cPointX,cPointY,cstr);
+    Canvas.TextRect(SRect,0,cPointY,cstr);
     (*
     if Focused and (FSelectedIndex=cPos) then
       Canvas.DrawFocusRect(Rect(cPointX-1,cPointY-1,cPointX+MaxTextWidth+1,cPointY+tHeight-1));
@@ -303,7 +302,7 @@ begin
     VertScrollBar.Position:=VertScrollBar.Position+(FLastCHeight-ClientHeight);
   end;
   if Assigned(HorzScrollBar) then
-    HorzScrollBar.Page:=ClientWidth div 2;
+    HorzScrollBar.Page:=ClientWidth;
   FLastCHeight:=ClientHeight;
   FUpdated:=True;
   OnTimer(Self);
