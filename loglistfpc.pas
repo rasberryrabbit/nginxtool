@@ -64,11 +64,11 @@ type
       procedure PutObject(Index: Integer; AObject: TObject); override;
       procedure InsertItem(Index: Integer; const S: string; O: TObject);
         override;
-      procedure Clear; override;
       procedure Changed; override;
     public
       constructor Create;
       destructor Destroy; override;
+      procedure Clear; override;
 
       function GetStrObj(Index, MaxLen:Integer; out obj:TLogStringData):string;
 
@@ -188,6 +188,8 @@ end;
 
 procedure TLogListFPC.OnTimer(Sender: TObject);
 begin
+  if HorzScrollBar.IsScrollBarVisible<>FLastHBar then
+    DoOnResize;
   if FUpdated then
     if VertScrollBar.Visible then
       VertScrollBar.Range:=Count * tHeight;
@@ -275,8 +277,6 @@ begin
     Canvas.Unlock;
   end;
   end;
-  if HorzScrollBar.IsScrollBarVisible<>FLastHBar then
-    DoOnResize;
   FLastHBar:=HorzScrollBar.IsScrollBarVisible;
   inherited Paint;
 end;
@@ -305,7 +305,6 @@ begin
     HorzScrollBar.Page:=ClientWidth;
   FLastCHeight:=ClientHeight;
   FUpdated:=True;
-  OnTimer(Self);
 end;
 
 procedure TLogListFPC.KeyDown(var Key: Word; Shift: TShiftState);
