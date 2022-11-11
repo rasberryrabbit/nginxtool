@@ -80,7 +80,7 @@ type
     function CheckOnOff(item: TNginxItem; b: Boolean): Boolean;
   public
     procedure SaveOptions;
-    procedure VerboseNginxConfig;
+    procedure VerboseNginxConfig(ForceUpdate: Boolean=False);
     function CheckSettingChange:Boolean;
 
     procedure NginxLogEndLine;
@@ -373,7 +373,7 @@ begin
   end;
 end;
 
-procedure TFormNginxtool.VerboseNginxConfig;
+procedure TFormNginxtool.VerboseNginxConfig(ForceUpdate: Boolean=False);
 var
  workercount : Integer;
  chunk_modified : Boolean;
@@ -387,7 +387,7 @@ var
  dHandle: THANDLE;
  stemp:string;
 begin
- chunk_modified:=CheckSettingChange;
+ chunk_modified:=ForceUpdate;
  loglist.AddLog('----- nginx config -----');
 
  configpar:=TNginxConfigParser.Create;
@@ -914,6 +914,7 @@ procedure TFormNginxtool.FormDestroy(Sender: TObject);
 begin
   if CheckSettingChange then begin
     SaveOptions;
+    VerboseNginxConfig(True);
     try
       JSONPropStorage1.Save;
     except

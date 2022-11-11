@@ -88,7 +88,7 @@ object FormNginxtool: TFormNginxtool
           ClientWidth = 596
           object SpinEdit_chunk: TSpinEdit
             Left = 96
-            Height = 20
+            Height = 23
             Top = 8
             Width = 96
             Increment = 512
@@ -117,7 +117,7 @@ object FormNginxtool: TFormNginxtool
           end
           object SpinEdit_sync: TSpinEdit
             Left = 280
-            Height = 20
+            Height = 23
             Top = 48
             Width = 82
             Increment = 10
@@ -137,10 +137,10 @@ object FormNginxtool: TFormNginxtool
           end
           object ComboBox_meta: TComboBox
             Left = 96
-            Height = 20
+            Height = 23
             Top = 48
             Width = 60
-            ItemHeight = 12
+            ItemHeight = 15
             ItemIndex = 2
             Items.Strings = (
               'off'
@@ -154,41 +154,41 @@ object FormNginxtool: TFormNginxtool
           end
           object CheckBox_waitvideo: TCheckBox
             Left = 9
-            Height = 17
+            Height = 19
             Top = 80
-            Width = 77
+            Width = 74
             Caption = 'wait_video'
             TabOrder = 3
           end
           object CheckBox_waitkey: TCheckBox
             Left = 168
-            Height = 17
+            Height = 19
             Top = 80
-            Width = 67
+            Width = 63
             Caption = 'wait_key'
             TabOrder = 4
           end
           object CheckBox_idlestm: TCheckBox
             Left = 9
-            Height = 17
+            Height = 19
             Top = 104
-            Width = 90
+            Width = 83
             Caption = 'idle_streams'
             TabOrder = 5
           end
           object CheckBox_publishnotify: TCheckBox
             Left = 168
-            Height = 17
+            Height = 19
             Top = 104
-            Width = 95
+            Width = 93
             Caption = 'publish_notify'
             TabOrder = 6
           end
           object CheckBox_interleave: TCheckBox
             Left = 336
-            Height = 17
+            Height = 19
             Top = 80
-            Width = 72
+            Width = 69
             Caption = 'interleave'
             TabOrder = 7
           end
@@ -203,7 +203,7 @@ object FormNginxtool: TFormNginxtool
           end
           object SpinEdit_buflen: TSpinEdit
             Left = 280
-            Height = 20
+            Height = 23
             Top = 8
             Width = 90
             Increment = 10
@@ -228,10 +228,10 @@ object FormNginxtool: TFormNginxtool
           end
           object ComboBox_Record: TComboBox
             Left = 96
-            Height = 20
+            Height = 23
             Top = 8
             Width = 80
-            ItemHeight = 12
+            ItemHeight = 15
             ItemIndex = 0
             Items.Strings = (
               'off'
@@ -308,9 +308,9 @@ object FormNginxtool: TFormNginxtool
           ClientWidth = 596
           object CheckBox_sessionrelay: TCheckBox
             Left = 8
-            Height = 17
+            Height = 19
             Top = 8
-            Width = 97
+            Width = 86
             Caption = 'session_relay'
             TabOrder = 0
           end
@@ -325,7 +325,7 @@ object FormNginxtool: TFormNginxtool
           end
           object EdRtmp1: TEdit
             Left = 88
-            Height = 20
+            Height = 23
             Top = 32
             Width = 504
             Anchors = [akTop, akRight]
@@ -344,7 +344,7 @@ object FormNginxtool: TFormNginxtool
           end
           object EdRtmp2: TEdit
             Left = 88
-            Height = 20
+            Height = 23
             Top = 56
             Width = 504
             Anchors = [akTop, akRight]
@@ -354,7 +354,7 @@ object FormNginxtool: TFormNginxtool
           end
           object EdRtmp3: TEdit
             Left = 88
-            Height = 20
+            Height = 23
             Top = 80
             Width = 504
             Anchors = [akTop, akRight]
