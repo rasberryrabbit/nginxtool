@@ -55,6 +55,11 @@ msgstr ""
 msgid "wait_video"
 msgstr ""
 
+#: tformnginxtool.chkrecordunique.caption
+msgctxt "tformnginxtool.chkrecordunique.caption"
+msgid "Record Unique"
+msgstr ""
+
 #: tformnginxtool.combobox_meta.text
 msgid "copy"
 msgstr ""
@@ -62,6 +67,10 @@ msgstr ""
 #: tformnginxtool.combobox_record.text
 msgctxt "tformnginxtool.combobox_record.text"
 msgid "off"
+msgstr ""
+
+#: tformnginxtool.edrecordmaxsize.text
+msgid "600M"
 msgstr ""
 
 #: tformnginxtool.groupbox1.caption
@@ -72,12 +81,24 @@ msgstr ""
 msgid "Chunk Size :"
 msgstr "Chunk 크기 :"
 
+#: tformnginxtool.label10.caption
+msgid "Max Size"
+msgstr ""
+
+#: tformnginxtool.label11.caption
+msgid "Suffix"
+msgstr ""
+
 #: tformnginxtool.label2.caption
 msgid "meta :"
 msgstr ""
 
 #: tformnginxtool.label3.caption
 msgid "buflen"
+msgstr ""
+
+#: tformnginxtool.label4.caption
+msgid "Path"
 msgstr ""
 
 #: tformnginxtool.label5.caption
@@ -98,5 +119,17 @@ msgstr ""
 
 #: tformnginxtool.label9.caption
 msgid "sync"
+msgstr ""
+
+#: tformnginxtool.tabsheet1.caption
+msgid "RTMP Live"
+msgstr ""
+
+#: tformnginxtool.tabsheet2.caption
+msgid "RTMP Recording"
+msgstr ""
+
+#: tformnginxtool.tabsheet3.caption
+msgid "RTMP Push"
 msgstr ""
 

@@ -1,29 +1,29 @@
 object FormNginxtool: TFormNginxtool
   Left = 281
-  Height = 430
+  Height = 472
   Top = 140
-  Width = 557
+  Width = 649
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'nginx rtmp tool'
-  ClientHeight = 430
-  ClientWidth = 557
+  ClientHeight = 472
+  ClientWidth = 649
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '2.1.0.0'
+  LCLVersion = '2.3.0.0'
   object Panel1: TPanel
     Left = 17
-    Height = 120
-    Top = 296
-    Width = 527
+    Height = 146
+    Top = 312
+    Width = 619
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvLowered
     TabOrder = 4
   end
   object ButtonStart: TButton
-    Left = 16
+    Left = 17
     Height = 25
-    Top = 256
+    Top = 280
     Width = 112
     Caption = '&Start'
     OnClick = ButtonStartClick
@@ -32,7 +32,7 @@ object FormNginxtool: TFormNginxtool
   object ButtonStop: TButton
     Left = 152
     Height = 25
-    Top = 256
+    Top = 280
     Width = 123
     Caption = 'Sto&p'
     OnClick = ButtonStopClick
@@ -40,19 +40,19 @@ object FormNginxtool: TFormNginxtool
   end
   object GroupBox1: TGroupBox
     Left = 8
-    Height = 248
+    Height = 264
     Top = 0
-    Width = 536
+    Width = 628
     Anchors = [akTop, akLeft, akRight]
     Caption = ' Option '
-    ClientHeight = 231
-    ClientWidth = 532
+    ClientHeight = 247
+    ClientWidth = 624
     TabOrder = 0
     object CheckBoxModConf: TCheckBox
       Left = 178
       Height = 19
       Top = 4
-      Width = 120
+      Width = 118
       Caption = 'Modify Config File'
       TabOrder = 1
     end
@@ -60,246 +60,351 @@ object FormNginxtool: TFormNginxtool
       Left = 10
       Height = 19
       Top = 4
-      Width = 140
+      Width = 138
       Caption = 'Above Normal Priority'
       TabOrder = 0
     end
-    object Label1: TLabel
+    object Panel2: TPanel
       Left = 10
-      Height = 12
-      Top = 35
-      Width = 73
-      Caption = 'Chunk Size :'
-      ParentColor = False
-    end
-    object ComboBox_meta: TComboBox
-      Left = 56
-      Height = 23
-      Top = 64
-      Width = 60
-      ItemHeight = 15
-      ItemIndex = 2
-      Items.Strings = (
-        'off'
-        'on'
-        'copy'
-      )
-      OnCloseUp = ComboBox_ValueChange
-      Style = csDropDownList
-      TabOrder = 5
-      Text = 'copy'
-    end
-    object Label2: TLabel
-      Left = 10
-      Height = 12
-      Top = 68
-      Width = 36
-      Caption = 'meta :'
-      ParentColor = False
-    end
-    object ComboBox_Record: TComboBox
-      Left = 256
-      Height = 23
-      Top = 30
-      Width = 100
-      ItemHeight = 15
-      ItemIndex = 0
-      Items.Strings = (
-        'off'
-        'all'
-        'video'
-        'audio'
-      )
-      TabOrder = 3
-      Text = 'off'
-    end
-    object Label5: TLabel
-      Left = 208
-      Height = 12
-      Top = 35
-      Width = 40
-      Caption = 'Record'
-      ParentColor = False
-    end
-    object EdRtmp1: TEdit
-      Left = 64
-      Height = 23
-      Top = 144
-      Width = 464
-      OnExit = EdRtmpExit
-      OnKeyPress = EdRtmpKeyPress
-      TabOrder = 13
-    end
-    object EdRtmp2: TEdit
-      Left = 64
-      Height = 23
-      Top = 168
-      Width = 464
-      OnExit = EdRtmpExit
-      OnKeyPress = EdRtmpKeyPress
-      TabOrder = 14
-    end
-    object EdRtmp3: TEdit
-      Left = 64
-      Height = 23
-      Top = 192
-      Width = 464
-      OnExit = EdRtmpExit
-      OnKeyPress = EdRtmpKeyPress
-      TabOrder = 15
-    end
-    object Label6: TLabel
-      Left = 14
-      Height = 12
-      Top = 152
-      Width = 41
-      Caption = 'RTMP1'
-      ParentColor = False
-    end
-    object CheckBox_waitvideo: TCheckBox
-      Left = 144
-      Height = 19
-      Top = 64
-      Width = 76
-      Caption = 'wait_video'
-      TabOrder = 6
-    end
-    object CheckBox_waitkey: TCheckBox
-      Left = 256
-      Height = 19
-      Top = 64
-      Width = 65
-      Caption = 'wait_key'
-      TabOrder = 7
-    end
-    object CheckBox_idlestm: TCheckBox
-      Left = 384
-      Height = 19
-      Top = 64
-      Width = 85
-      Caption = 'idle_streams'
-      TabOrder = 8
-    end
-    object CheckBox_sessionrelay: TCheckBox
-      Left = 10
-      Height = 19
-      Top = 96
-      Width = 88
-      Caption = 'session_relay'
-      TabOrder = 9
-    end
-    object CheckBox_publishnotify: TCheckBox
-      Left = 144
-      Height = 19
-      Top = 96
-      Width = 95
-      Caption = 'publish_notify'
-      TabOrder = 10
-    end
-    object Label9: TLabel
-      Left = 368
-      Height = 12
-      Top = 35
-      Width = 28
-      Caption = 'sync'
-      ParentColor = False
-    end
-    object SpinEdit_sync: TSpinEdit
-      Left = 408
-      Height = 23
-      Top = 30
-      Width = 82
-      Increment = 10
-      MaxValue = 10000
-      MinValue = 10
-      TabOrder = 4
-      Value = 300
-    end
-    object SpinEdit_buflen: TSpinEdit
-      Left = 408
-      Height = 23
-      Top = 96
-      Width = 90
-      Increment = 10
-      MaxValue = 10000
-      MinValue = 10
-      TabOrder = 12
-      Value = 1000
-    end
-    object Label3: TLabel
-      Left = 360
-      Height = 12
-      Top = 103
-      Width = 34
-      Caption = 'buflen'
-      ParentColor = False
-    end
-    object SpinEdit_chunk: TSpinEdit
-      Left = 88
-      Height = 23
-      Top = 30
-      Width = 96
-      Increment = 512
-      MaxValue = 32768
-      MinValue = 512
+      Height = 216
+      Top = 24
+      Width = 606
+      Anchors = [akTop, akLeft, akRight]
+      ClientHeight = 216
+      ClientWidth = 606
       TabOrder = 2
-      Value = 4096
-    end
-    object CheckBox_interleave: TCheckBox
-      Left = 256
-      Height = 19
-      Top = 96
-      Width = 71
-      Caption = 'interleave'
-      TabOrder = 11
+      object PageControl1: TPageControl
+        Left = 1
+        Height = 214
+        Top = 1
+        Width = 604
+        ActivePage = TabSheet1
+        Align = alClient
+        TabIndex = 0
+        TabOrder = 0
+        object TabSheet1: TTabSheet
+          Caption = 'RTMP Live'
+          ClientHeight = 186
+          ClientWidth = 596
+          object SpinEdit_chunk: TSpinEdit
+            Left = 96
+            Height = 20
+            Top = 8
+            Width = 96
+            Increment = 512
+            MaxValue = 32768
+            MinValue = 512
+            TabOrder = 0
+            Value = 4096
+          end
+          object Label1: TLabel
+            Left = 13
+            Height = 12
+            Top = 12
+            Width = 73
+            Caption = 'Chunk Size :'
+            Color = clDefault
+            ParentColor = False
+          end
+          object Label9: TLabel
+            Left = 232
+            Height = 12
+            Top = 53
+            Width = 28
+            Caption = 'sync'
+            Color = clDefault
+            ParentColor = False
+          end
+          object SpinEdit_sync: TSpinEdit
+            Left = 280
+            Height = 20
+            Top = 48
+            Width = 82
+            Increment = 10
+            MaxValue = 10000
+            MinValue = 10
+            TabOrder = 1
+            Value = 300
+          end
+          object Label2: TLabel
+            Left = 16
+            Height = 12
+            Top = 53
+            Width = 36
+            Caption = 'meta :'
+            Color = clDefault
+            ParentColor = False
+          end
+          object ComboBox_meta: TComboBox
+            Left = 96
+            Height = 20
+            Top = 48
+            Width = 60
+            ItemHeight = 12
+            ItemIndex = 2
+            Items.Strings = (
+              'off'
+              'on'
+              'copy'
+            )
+            OnCloseUp = ComboBox_ValueChange
+            Style = csDropDownList
+            TabOrder = 2
+            Text = 'copy'
+          end
+          object CheckBox_waitvideo: TCheckBox
+            Left = 9
+            Height = 17
+            Top = 80
+            Width = 77
+            Caption = 'wait_video'
+            TabOrder = 3
+          end
+          object CheckBox_waitkey: TCheckBox
+            Left = 168
+            Height = 17
+            Top = 80
+            Width = 67
+            Caption = 'wait_key'
+            TabOrder = 4
+          end
+          object CheckBox_idlestm: TCheckBox
+            Left = 9
+            Height = 17
+            Top = 104
+            Width = 90
+            Caption = 'idle_streams'
+            TabOrder = 5
+          end
+          object CheckBox_publishnotify: TCheckBox
+            Left = 168
+            Height = 17
+            Top = 104
+            Width = 95
+            Caption = 'publish_notify'
+            TabOrder = 6
+          end
+          object CheckBox_interleave: TCheckBox
+            Left = 336
+            Height = 17
+            Top = 80
+            Width = 72
+            Caption = 'interleave'
+            TabOrder = 7
+          end
+          object Label3: TLabel
+            Left = 230
+            Height = 12
+            Top = 12
+            Width = 34
+            Caption = 'buflen'
+            Color = clDefault
+            ParentColor = False
+          end
+          object SpinEdit_buflen: TSpinEdit
+            Left = 280
+            Height = 20
+            Top = 8
+            Width = 90
+            Increment = 10
+            MaxValue = 10000
+            MinValue = 10
+            TabOrder = 8
+            Value = 1000
+          end
+        end
+        object TabSheet2: TTabSheet
+          Caption = 'RTMP Recording'
+          ClientHeight = 186
+          ClientWidth = 596
+          object Label5: TLabel
+            Left = 16
+            Height = 12
+            Top = 12
+            Width = 40
+            Caption = 'Record'
+            Color = clDefault
+            ParentColor = False
+          end
+          object ComboBox_Record: TComboBox
+            Left = 96
+            Height = 20
+            Top = 8
+            Width = 80
+            ItemHeight = 12
+            ItemIndex = 0
+            Items.Strings = (
+              'off'
+              'all'
+              'video'
+              'audio'
+            )
+            TabOrder = 0
+            Text = 'off'
+          end
+          object Record_path: TDirectoryEdit
+            Left = 96
+            Height = 23
+            Top = 32
+            Width = 496
+            DialogTitle = 'Recoding Path'
+            DialogOptions = [ofCreatePrompt, ofEnableSizing, ofViewDetail]
+            ShowHidden = False
+            ButtonWidth = 23
+            NumGlyphs = 1
+            Anchors = [akTop, akRight]
+            MaxLength = 0
+            TabOrder = 1
+            OnExit = Record_pathExit
+          end
+          object chkRecordUnique: TCheckBox
+            Left = 16
+            Height = 19
+            Top = 64
+            Width = 97
+            Caption = 'Record Unique'
+            TabOrder = 2
+          end
+          object Label4: TLabel
+            Left = 19
+            Height = 12
+            Top = 40
+            Width = 25
+            Caption = 'Path'
+          end
+          object Label10: TLabel
+            Left = 19
+            Height = 12
+            Top = 94
+            Width = 54
+            Caption = 'Max Size'
+          end
+          object edRecordMaxSize: TEdit
+            Left = 96
+            Height = 23
+            Top = 88
+            Width = 200
+            TabOrder = 3
+            Text = '600M'
+          end
+          object edRecordSuffix: TEdit
+            Left = 96
+            Height = 23
+            Top = 120
+            Width = 200
+            TabOrder = 4
+          end
+          object Label11: TLabel
+            Left = 19
+            Height = 12
+            Top = 126
+            Width = 31
+            Caption = 'Suffix'
+          end
+        end
+        object TabSheet3: TTabSheet
+          Caption = 'RTMP Push'
+          ClientHeight = 186
+          ClientWidth = 596
+          object CheckBox_sessionrelay: TCheckBox
+            Left = 8
+            Height = 17
+            Top = 8
+            Width = 97
+            Caption = 'session_relay'
+            TabOrder = 0
+          end
+          object Label6: TLabel
+            Left = 8
+            Height = 12
+            Top = 36
+            Width = 41
+            Caption = 'RTMP1'
+            Color = clDefault
+            ParentColor = False
+          end
+          object EdRtmp1: TEdit
+            Left = 88
+            Height = 20
+            Top = 32
+            Width = 504
+            Anchors = [akTop, akRight]
+            OnExit = EdRtmpExit
+            OnKeyPress = EdRtmpKeyPress
+            TabOrder = 1
+          end
+          object Label7: TLabel
+            Left = 8
+            Height = 12
+            Top = 61
+            Width = 41
+            Caption = 'RTMP2'
+            Color = clDefault
+            ParentColor = False
+          end
+          object EdRtmp2: TEdit
+            Left = 88
+            Height = 20
+            Top = 56
+            Width = 504
+            Anchors = [akTop, akRight]
+            OnExit = EdRtmpExit
+            OnKeyPress = EdRtmpKeyPress
+            TabOrder = 2
+          end
+          object EdRtmp3: TEdit
+            Left = 88
+            Height = 20
+            Top = 80
+            Width = 504
+            Anchors = [akTop, akRight]
+            OnExit = EdRtmpExit
+            OnKeyPress = EdRtmpKeyPress
+            TabOrder = 3
+          end
+          object Label8: TLabel
+            Left = 8
+            Height = 12
+            Top = 86
+            Width = 41
+            Caption = 'RTMP3'
+            Color = clDefault
+            ParentColor = False
+          end
+        end
+      end
     end
   end
   object ButtonReload: TButton
-    Left = 304
+    Left = 296
     Height = 25
-    Top = 256
+    Top = 280
     Width = 123
     Caption = '&Reload'
     OnClick = ButtonReloadClick
     TabOrder = 3
   end
-  object Label7: TLabel
-    Left = 24
-    Height = 12
-    Top = 192
-    Width = 41
-    Caption = 'RTMP2'
-    ParentColor = False
-  end
-  object Label8: TLabel
-    Left = 24
-    Height = 12
-    Top = 217
-    Width = 41
-    Caption = 'RTMP3'
-    ParentColor = False
-  end
   object UniqueInstance1: TUniqueInstance
     Enabled = True
-    Left = 312
-    Top = 192
+    Left = 432
+    Top = 272
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 500
     OnTimer = Timer1Timer
-    Left = 368
-    Top = 192
+    Left = 464
+    Top = 272
   end
   object JSONPropStorage1: TJSONPropStorage
     StoredValues = <>
     Formatted = True
-    Left = 440
-    Top = 192
+    Left = 496
+    Top = 272
   end
   object TimerLog: TTimer
     OnTimer = TimerLogTimer
-    Left = 504
-    Top = 192
+    Left = 528
+    Top = 272
   end
 end

@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
-  StdCtrls, JSONPropStorage, Spin, UniqueInstance, uConfigParser;
+  StdCtrls, JSONPropStorage, Spin, ComCtrls, EditBtn, UniqueInstance,
+  uConfigParser;
 
 type
 
@@ -16,6 +17,7 @@ type
     ButtonStart: TButton;
     ButtonStop: TButton;
     ButtonReload: TButton;
+    chkRecordUnique: TCheckBox;
     CheckBox_interleave: TCheckBox;
     CheckBox_publishnotify: TCheckBox;
     CheckBox_sessionrelay: TCheckBox;
@@ -26,23 +28,34 @@ type
     CheckBoxModConf: TCheckBox;
     ComboBox_Record: TComboBox;
     ComboBox_meta: TComboBox;
+    edRecordSuffix: TEdit;
+    edRecordMaxSize: TEdit;
+    Label11: TLabel;
+    Record_path: TDirectoryEdit;
     EdRtmp1: TEdit;
     EdRtmp2: TEdit;
     EdRtmp3: TEdit;
     GroupBox1: TGroupBox;
     JSONPropStorage1: TJSONPropStorage;
     Label1: TLabel;
+    Label10: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
+    PageControl1: TPageControl;
     Panel1: TPanel;
+    Panel2: TPanel;
     SpinEdit_chunk: TSpinEdit;
     SpinEdit_buflen: TSpinEdit;
     SpinEdit_sync: TSpinEdit;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    TabSheet3: TTabSheet;
     Timer1: TTimer;
     TimerLog: TTimer;
     UniqueInstance1: TUniqueInstance;
@@ -59,6 +72,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure Record_pathExit(Sender: TObject);
     procedure SpinEdit_syncChange(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure TimerLogTimer(Sender: TObject);
@@ -317,7 +331,10 @@ begin
     );
   JSONPropStorage1.WriteInteger('sync',SpinEdit_sync.Value);
   JSONPropStorage1.WriteInteger('buflen',SpinEdit_buflen.Value);
-
+  JSONPropStorage1.WriteString('recordpath',SwitchPathDelims(Record_path.Directory,pdsSystem));
+  JSONPropStorage1.WriteString('recordmaxsize',edRecordMaxSize.Text);
+  JSONPropStorage1.WriteBoolean('recordunique',chkRecordUnique.Checked);
+  JSONPropStorage1.WriteString('recordsuffix',edRecordSuffix.Text);
 end;
 
 function StripInt(const s:string):Integer;
@@ -370,7 +387,7 @@ var
  dHandle: THANDLE;
  stemp:string;
 begin
- chunk_modified:=False;
+ chunk_modified:=CheckSettingChange;
  loglist.AddLog('----- nginx config -----');
 
  configpar:=TNginxConfigParser.Create;
@@ -713,10 +730,11 @@ begin
    if CheckBoxModConf.Checked then begin
      if item=nil then begin
        if itemgrp<>nil then begin
-         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_path',pchar(StringReplace( ExtractFileDir(GetUserDir),PathDelim,'/',[rfReplaceAll]))+';');
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_path',SwitchPathDelims(GetUserDir,pdsUnix)+';');
          chunk_modified:=True;
        end;
-     end;
+     end else
+       item.Value:=SwitchPathDelims(Record_path.Directory,pdsUnix)+';';
    end;
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
@@ -729,7 +747,8 @@ begin
          item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_max_size','600M;');
          chunk_modified:=True;
        end;
-     end;
+     end else
+       item.Value:=edRecordMaxSize.Text+';';
    end;
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
@@ -742,7 +761,23 @@ begin
          item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_suffix','-%y-%m-%d-%H-%M-%S.flv;');
          chunk_modified:=True;
        end;
-     end;
+     end else
+       item.Value:=edRecordSuffix.Text+';';
+   end;
+   if item<>nil then
+     loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
+
+   // record_unique off;
+   item:=itemgrp.FindItemName('record_unique');
+   if CheckBoxModConf.Checked then begin
+     if item=nil then begin
+       if itemgrp<>nil then begin
+         item:=itemgrp.InsertNameValue(0,itemgrp.Level+1,'record_unique','off;');
+         chunk_modified:=True;
+       end;
+     end else
+       if CheckOnOff(item,chkRecordUnique.Checked) then
+         chunk_modified:=True;
    end;
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
@@ -803,6 +838,14 @@ begin
    Result:=SpinEdit_sync.Value<>JSONPropStorage1.ReadInteger('sync',SpinEdit_sync.Value);
  if not Result then
    Result:=SpinEdit_buflen.Value<>JSONPropStorage1.ReadInteger('buflen',SpinEdit_buflen.Value);
+ if not Result then
+   Result:=Record_path.Directory<>JSONPropStorage1.ReadString('recordpath',Record_path.Directory);
+ if not Result then
+   Result:=edRecordMaxSize.Text<>JSONPropStorage1.ReadString('recordmaxsize',edRecordMaxSize.Text);
+ if not Result then
+   Result:=chkRecordUnique.Checked<>JSONPropStorage1.ReadBoolean('recordunique',chkRecordUnique.Checked);
+ if not Result then
+   Result:=edRecordSuffix.Text<>JSONPropStorage1.ReadString('recordsuffix',edRecordSuffix.Text);
 end;
 
 procedure TFormNginxtool.NginxLogEndLine;
@@ -1087,6 +1130,10 @@ begin
     CheckBox_interleave.Checked:=JSONPropStorage1.ReadBoolean('interleave',CheckBox_interleave.Checked);
     SpinEdit_sync.Value:=JSONPropStorage1.ReadInteger('sync',SpinEdit_sync.Value);
     SpinEdit_buflen.Value:=JSONPropStorage1.ReadInteger('buflen',SpinEdit_buflen.Value);
+    Record_path.Directory:=SwitchPathDelims(JSONPropStorage1.ReadString('recordpath',Record_path.Directory),pdsSystem);
+    edRecordSuffix.Text:=JSONPropStorage1.ReadString('recordsuffix',edRecordSuffix.Text);
+    edRecordMaxSize.Text:=JSONPropStorage1.ReadString('recordmaxsize',edRecordMaxSize.Text);
+    chkRecordUnique.Checked:=JSONPropStorage1.ReadBoolean('recordunique',chkRecordUnique.Checked);
   except
   end;
   SaveOptions;
@@ -1105,6 +1152,11 @@ begin
   SpinEdit_buflen.OnEditingDone:=@SpinEdit_syncChange;
   VerboseNginxConfig;
 
+end;
+
+procedure TFormNginxtool.Record_pathExit(Sender: TObject);
+begin
+  VerboseNginxConfig;
 end;
 
 procedure TFormNginxtool.SpinEdit_syncChange(Sender: TObject);
