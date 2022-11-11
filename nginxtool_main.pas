@@ -72,7 +72,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure Record_pathExit(Sender: TObject);
     procedure SpinEdit_syncChange(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure TimerLogTimer(Sender: TObject);
@@ -734,7 +733,10 @@ begin
          chunk_modified:=True;
        end;
      end else
-       item.Value:=SwitchPathDelims(Record_path.Directory,pdsUnix)+';';
+       if Record_path.Directory<>JSONPropStorage1.ReadString('recordpath',Record_path.Directory) then begin
+         item.Value:=SwitchPathDelims(Record_path.Directory,pdsUnix)+';';
+         chunk_modified:=True;
+       end;
    end;
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
@@ -748,7 +750,10 @@ begin
          chunk_modified:=True;
        end;
      end else
-       item.Value:=edRecordMaxSize.Text+';';
+       if edRecordMaxSize.Text<>JSONPropStorage1.ReadString('recordmaxsize',edRecordMaxSize.Text) then begin
+         item.Value:=edRecordMaxSize.Text+';';
+         chunk_modified:=True;
+       end;
    end;
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
@@ -762,7 +767,10 @@ begin
          chunk_modified:=True;
        end;
      end else
-       item.Value:=edRecordSuffix.Text+';';
+       if edRecordSuffix.Text<>JSONPropStorage1.ReadString('recordsuffix',edRecordSuffix.Text) then begin
+         item.Value:=edRecordSuffix.Text+';';
+         chunk_modified:=True;
+       end;
    end;
    if item<>nil then
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
@@ -936,6 +944,7 @@ begin
      exit;
   end;
   {$endif}
+  VerboseNginxConfig;
   myprocess:=TProcess.Create(nil);
   try
     myprocess.InheritHandles:=false;
@@ -1019,6 +1028,7 @@ begin
      exit;
   end;
   {$endif}
+  VerboseNginxConfig;
   myprocess:=TProcess.Create(nil);
   try
     myprocess.InheritHandles:=false;
@@ -1131,9 +1141,9 @@ begin
     CheckBox_interleave.Checked:=JSONPropStorage1.ReadBoolean('interleave',CheckBox_interleave.Checked);
     SpinEdit_sync.Value:=JSONPropStorage1.ReadInteger('sync',SpinEdit_sync.Value);
     SpinEdit_buflen.Value:=JSONPropStorage1.ReadInteger('buflen',SpinEdit_buflen.Value);
-    Record_path.Directory:=SwitchPathDelims(JSONPropStorage1.ReadString('recordpath',Record_path.Directory),pdsSystem);
-    edRecordSuffix.Text:=JSONPropStorage1.ReadString('recordsuffix',edRecordSuffix.Text);
-    edRecordMaxSize.Text:=JSONPropStorage1.ReadString('recordmaxsize',edRecordMaxSize.Text);
+    Record_path.Directory:=SwitchPathDelims(JSONPropStorage1.ReadString('recordpath',GetUserDir),pdsSystem);
+    edRecordSuffix.Text:=JSONPropStorage1.ReadString('recordsuffix','-%y-%m-%d-%H-%M-%S.flv');
+    edRecordMaxSize.Text:=JSONPropStorage1.ReadString('recordmaxsize','600M');
     chkRecordUnique.Checked:=JSONPropStorage1.ReadBoolean('recordunique',chkRecordUnique.Checked);
   except
   end;
@@ -1153,11 +1163,6 @@ begin
   SpinEdit_buflen.OnEditingDone:=@SpinEdit_syncChange;
   VerboseNginxConfig;
 
-end;
-
-procedure TFormNginxtool.Record_pathExit(Sender: TObject);
-begin
-  VerboseNginxConfig;
 end;
 
 procedure TFormNginxtool.SpinEdit_syncChange(Sender: TObject);

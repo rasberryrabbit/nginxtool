@@ -255,7 +255,6 @@ object FormNginxtool: TFormNginxtool
             Anchors = [akTop, akRight]
             MaxLength = 0
             TabOrder = 1
-            OnExit = Record_pathExit
           end
           object chkRecordUnique: TCheckBox
             Left = 16
