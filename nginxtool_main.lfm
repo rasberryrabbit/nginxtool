@@ -1,21 +1,23 @@
 object FormNginxtool: TFormNginxtool
   Left = 281
-  Height = 472
+  Height = 439
   Top = 140
-  Width = 649
+  Width = 600
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'nginx rtmp tool'
-  ClientHeight = 472
-  ClientWidth = 649
+  ClientHeight = 439
+  ClientWidth = 600
+  Constraints.MinHeight = 400
+  Constraints.MinWidth = 600
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   LCLVersion = '2.3.0.0'
   object Panel1: TPanel
     Left = 17
-    Height = 146
+    Height = 113
     Top = 312
-    Width = 619
+    Width = 570
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvLowered
     TabOrder = 4
@@ -42,11 +44,11 @@ object FormNginxtool: TFormNginxtool
     Left = 8
     Height = 264
     Top = 0
-    Width = 628
+    Width = 579
     Anchors = [akTop, akLeft, akRight]
     Caption = ' Option '
     ClientHeight = 247
-    ClientWidth = 624
+    ClientWidth = 575
     TabOrder = 0
     object CheckBoxModConf: TCheckBox
       Left = 178
@@ -68,16 +70,16 @@ object FormNginxtool: TFormNginxtool
       Left = 10
       Height = 216
       Top = 24
-      Width = 606
+      Width = 557
       Anchors = [akTop, akLeft, akRight]
       ClientHeight = 216
-      ClientWidth = 606
+      ClientWidth = 557
       TabOrder = 2
       object PageControl1: TPageControl
         Left = 1
         Height = 214
         Top = 1
-        Width = 604
+        Width = 555
         ActivePage = TabSheet1
         Align = alClient
         TabIndex = 0
@@ -85,7 +87,7 @@ object FormNginxtool: TFormNginxtool
         object TabSheet1: TTabSheet
           Caption = 'RTMP Live'
           ClientHeight = 186
-          ClientWidth = 596
+          ClientWidth = 547
           object SpinEdit_chunk: TSpinEdit
             Left = 96
             Height = 23
@@ -216,7 +218,7 @@ object FormNginxtool: TFormNginxtool
         object TabSheet2: TTabSheet
           Caption = 'RTMP Recording'
           ClientHeight = 186
-          ClientWidth = 596
+          ClientWidth = 547
           object Label5: TLabel
             Left = 16
             Height = 12
@@ -246,13 +248,13 @@ object FormNginxtool: TFormNginxtool
             Left = 96
             Height = 23
             Top = 32
-            Width = 496
+            Width = 447
             DialogTitle = 'Recoding Path'
             DialogOptions = [ofCreatePrompt, ofEnableSizing, ofViewDetail]
             ShowHidden = False
             ButtonWidth = 23
             NumGlyphs = 1
-            Anchors = [akTop, akRight]
+            Anchors = [akTop, akLeft, akRight]
             MaxLength = 0
             TabOrder = 1
           end
@@ -304,7 +306,7 @@ object FormNginxtool: TFormNginxtool
         object TabSheet3: TTabSheet
           Caption = 'RTMP Push'
           ClientHeight = 186
-          ClientWidth = 596
+          ClientWidth = 547
           object CheckBox_sessionrelay: TCheckBox
             Left = 8
             Height = 19
@@ -323,11 +325,11 @@ object FormNginxtool: TFormNginxtool
             ParentColor = False
           end
           object EdRtmp1: TEdit
-            Left = 88
+            Left = 57
             Height = 23
             Top = 32
-            Width = 504
-            Anchors = [akTop, akRight]
+            Width = 486
+            Anchors = [akTop, akLeft, akRight]
             OnExit = EdRtmpExit
             OnKeyPress = EdRtmpKeyPress
             TabOrder = 1
@@ -342,21 +344,21 @@ object FormNginxtool: TFormNginxtool
             ParentColor = False
           end
           object EdRtmp2: TEdit
-            Left = 88
+            Left = 57
             Height = 23
             Top = 56
-            Width = 504
-            Anchors = [akTop, akRight]
+            Width = 486
+            Anchors = [akTop, akLeft, akRight]
             OnExit = EdRtmpExit
             OnKeyPress = EdRtmpKeyPress
             TabOrder = 2
           end
           object EdRtmp3: TEdit
-            Left = 88
+            Left = 57
             Height = 23
             Top = 80
-            Width = 504
-            Anchors = [akTop, akRight]
+            Width = 486
+            Anchors = [akTop, akLeft, akRight]
             OnExit = EdRtmpExit
             OnKeyPress = EdRtmpKeyPress
             TabOrder = 3
