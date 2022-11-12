@@ -617,8 +617,9 @@ begin
      itemgrp:=itemgrpPrev.FindItemGroup('application');
      itemgrp.AddNameValue(itemgrp.Level+1,'live','on;');
      itemgrp.AddNameValue(itemgrp.Level+1,'interleave','off;');
-     itemgrp.AddNameValue(itemgrp.Level+1,'allow','publish all;');
-     itemgrp.AddNameValue(itemgrp.Level+1,'allow','play all;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'allow','publish 127.0.0.1;');
+     itemgrp.AddNameValue(itemgrp.Level+1,'deny','publish all;');
+     //itemgrp.AddNameValue(itemgrp.Level+1,'allow','play all;');
      itemgrp.MarkClose;
      chunk_modified:=True;
    end;
