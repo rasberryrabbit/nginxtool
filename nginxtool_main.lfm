@@ -381,7 +381,7 @@ object FormNginxtool: TFormNginxtool
     Height = 25
     Top = 280
     Width = 123
-    Caption = '&Reload'
+    Caption = '&ReStart'
     OnClick = ButtonReloadClick
     TabOrder = 3
   end

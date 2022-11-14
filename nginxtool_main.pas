@@ -98,6 +98,19 @@ uses
 const
   ngxLogFile = './logs/error.log';
 
+resourcestring
+  rsError = '> Error: ';
+  rsNginxRestart = '> nginx restarted';
+  rsNginxIsNotRun = '> nginx is not running';
+  rsNginxStopped = '> nginx stopped';
+  rsNginxStarted = '> nginx started';
+  rsAlreadyRunning = '> Already running! Try restart.';
+  rsIPAddressS = '> IP Address: %s';
+  rsFailToWriteConfig = 'Fail to write file "conf/nginx.conf"';
+  rsNginxConfig = '----- nginx config -----';
+  rsCannotSetP = 'Cannot set process priority %d';
+  rsSetProcessP = 'Set process priority %d';
+
 var
   loglist:TLogListFPC;
   {$ifdef WINDOWS}
@@ -228,10 +241,10 @@ var
            if not (GetPriorityClass(ph)=priority) then
              if not SetPriorityClass(ph,priority) then begin
                GetLastError;
-               loglist.AddLog(Format('Cannot set process priority %d',[ph]));
+               loglist.AddLog(Format(rsCannotSetP, [ph]));
              end else begin
                Inc(nginx_process_find);
-               loglist.AddLog(Format('Set process priority %d',[ph]));
+               loglist.AddLog(Format(rsSetProcessP, [ph]));
              end;
          end;
        end;
@@ -387,7 +400,7 @@ var
  stemp:string;
 begin
  chunk_modified:=ForceUpdate;
- loglist.AddLog('----- nginx config -----');
+ loglist.AddLog(rsNginxConfig);
 
  configpar:=TNginxConfigParser.Create;
  try
@@ -796,7 +809,7 @@ begin
        configpar.Save('conf/nginx.conf');
      except
        on e:exception do begin
-         loglist.AddLog('Fail to write file "conf/nginx.conf"');
+         loglist.AddLog(rsFailToWriteConfig);
        end;
      end;
    end;
@@ -815,7 +828,7 @@ begin
  end;
 
  GetIPAddr(IPBuf,sizeof(IPBuf));
- loglist.AddLog(Format('> IP Address: %s',[IPBuf]));
+ loglist.AddLog(Format(rsIPAddressS, [IPBuf]));
 end;
 
 function TFormNginxtool.CheckSettingChange: Boolean;
@@ -940,7 +953,7 @@ begin
   runtime:=Now;
   {$ifdef WINDOWS}
   if checkEnumProcess('nginx.exe') then begin
-     loglist.AddLog('> Already running! Try reloading.');
+     loglist.AddLog(rsAlreadyRunning);
      ButtonReloadClick(Sender);
      exit;
   end;
@@ -970,10 +983,10 @@ begin
       nginx_process_find:=0;
       Timer1.Enabled:=True;
       TimerLog.Enabled:=True;
-      loglist.AddLog('> nginx started');
+      loglist.AddLog(rsNginxStarted);
     except
       on e:exception do
-         loglist.AddLog('> Error: '+e.Message);
+         loglist.AddLog(rsError+e.Message);
     end;
   finally
     myprocess.Free;
@@ -989,7 +1002,7 @@ begin
   bGotNginxLog:=False;
   {$ifdef WINDOWS}
   if not checkEnumProcess('nginx.exe') then begin
-     loglist.AddLog('> nginx is not running');
+     loglist.AddLog(rsNginxIsNotRun);
      exit;
   end;
   {$endif}
@@ -1006,10 +1019,10 @@ begin
     try
       myprocess.Execute;
       TimerLog.Enabled:=True;
-      loglist.AddLog('> nginx stopped');
+      loglist.AddLog(rsNginxStopped);
     except
       on e:exception do
-         loglist.AddLog('> Error: '+e.Message);
+         loglist.AddLog(rsError+e.Message);
     end;
   finally
     myprocess.Free;
@@ -1025,7 +1038,7 @@ begin
   bGotNginxLog:=False;
   {$ifdef WINDOWS}
   if not checkEnumProcess('nginx.exe') then begin
-     loglist.AddLog('> nginx is not running');
+     loglist.AddLog(rsNginxIsNotRun);
      exit;
   end;
   {$endif}
@@ -1056,10 +1069,10 @@ begin
       nginx_process_find:=0;
       Timer1.Enabled:=True;
       TimerLog.Enabled:=True;
-      loglist.AddLog('> nginx reloaded');
+      loglist.AddLog(rsNginxRestart);
     except
       on e:exception do
-         loglist.AddLog('> Error: '+e.Message);
+         loglist.AddLog(rsError+e.Message);
     end;
   finally
     myprocess.Free;
