@@ -629,7 +629,10 @@ begin
    itemgrpPrev:=itemgrp;
    itemgrp:=itemgrpPrev.FindItemGroup('application');
    while itemgrp<>nil do begin
-     if itemgrp.FindItemName('hls')=nil then
+     if (itemgrp.FindItemName('hls')=nil) or
+        ((itemgrp.FindItemName('hls')<>nil) and
+         (NginxRemoveTrailValue(itemgrp.FindItemName('hls').Value)='off')
+        ) then
        break;
      itemgrp:=itemgrpPrev.FindItemGroupNext(itemgrp,'application');
    end;
