@@ -1008,7 +1008,6 @@ begin
     errForm:=TFormError.Create(self);
     try
       errForm.MemoErr.Lines.LoadFromFile(errorlog_path);
-      errForm.MemoErr.SelStart:=errForm.MemoErr.GetTextLen;
       errForm.ShowModal;
     finally
       errForm.Free;

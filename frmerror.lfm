@@ -7,6 +7,7 @@ object FormError: TFormError
   Caption = 'Error log'
   ClientHeight = 388
   ClientWidth = 515
+  OnShow = FormShow
   Position = poMainFormCenter
   LCLVersion = '2.3.0.0'
   object MemoErr: TMemo
@@ -18,5 +19,12 @@ object FormError: TFormError
     ScrollBars = ssAutoBoth
     TabOrder = 0
     WordWrap = False
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = Timer1Timer
+    Left = 256
+    Top = 136
   end
 end
