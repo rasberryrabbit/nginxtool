@@ -396,7 +396,7 @@ var
 
  configpar:TNginxConfigParser;
  item, itemprev:TNginxItem;
- rtmpgrp, itemgrp, itemgrpPrev:TNginxItemGroup;
+ rtmpgrp, itemgrp, itemgrpPrev, firstitemgrp: TNginxItemGroup;
  itemidx:Integer;
  i,k:Integer;
  dHandle: THANDLE;
@@ -626,16 +626,25 @@ begin
      loglist.AddLog(Format('%s %s',[item.NameItem,item.Value]));
 
    // ----- application -----
+   firstitemgrp:=nil;
    itemgrpPrev:=itemgrp;
    itemgrp:=itemgrpPrev.FindItemGroup('application');
    while itemgrp<>nil do begin
-     if (itemgrp.FindItemName('hls')=nil) or
-        ((itemgrp.FindItemName('hls')<>nil) and
-         (NginxRemoveTrailValue(itemgrp.FindItemName('hls').Value)='off')
+     // check 'live' and 'hls' item
+     if ((itemgrp.FindItemName('live')<>nil) and
+         (NginxRemoveTrailValue(itemgrp.FindItemName('live').Value)='on')
+        )
+        and
+        ((itemgrp.FindItemName('hls')=nil) or
+         ((itemgrp.FindItemName('hls')<>nil) and
+          (NginxRemoveTrailValue(itemgrp.FindItemName('hls').Value)='off'))
         ) then
-       break;
+       firstitemgrp:=itemgrp;
      itemgrp:=itemgrpPrev.FindItemGroupNext(itemgrp,'application');
    end;
+   // get first application live section.
+   itemgrp:=firstitemgrp;
+   // insert application live section
    if itemgrp=nil then begin
      itemgrpPrev.AddNameGroup(itemgrpPrev.Level+1,'application','live {');
      itemgrp:=itemgrpPrev.FindItemGroup('application');
