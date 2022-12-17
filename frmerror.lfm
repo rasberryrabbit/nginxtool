@@ -1,0 +1,22 @@
+object FormError: TFormError
+  Left = 380
+  Height = 388
+  Top = 205
+  Width = 515
+  BorderStyle = bsDialog
+  Caption = 'Error log'
+  ClientHeight = 388
+  ClientWidth = 515
+  Position = poMainFormCenter
+  LCLVersion = '2.3.0.0'
+  object MemoErr: TMemo
+    Left = 8
+    Height = 370
+    Top = 8
+    Width = 498
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    ScrollBars = ssAutoBoth
+    TabOrder = 0
+    WordWrap = False
+  end
+end

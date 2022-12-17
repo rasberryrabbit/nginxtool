@@ -20,7 +20,7 @@ object FormNginxtool: TFormNginxtool
     Width = 570
     Anchors = [akTop, akLeft, akRight, akBottom]
     BevelOuter = bvLowered
-    TabOrder = 4
+    TabOrder = 5
   end
   object ButtonStart: TButton
     Left = 17
@@ -105,7 +105,6 @@ object FormNginxtool: TFormNginxtool
             Top = 12
             Width = 73
             Caption = 'Chunk Size :'
-            Color = clDefault
             ParentColor = False
           end
           object Label9: TLabel
@@ -114,7 +113,6 @@ object FormNginxtool: TFormNginxtool
             Top = 53
             Width = 28
             Caption = 'sync'
-            Color = clDefault
             ParentColor = False
           end
           object SpinEdit_sync: TSpinEdit
@@ -134,7 +132,6 @@ object FormNginxtool: TFormNginxtool
             Top = 53
             Width = 36
             Caption = 'meta :'
-            Color = clDefault
             ParentColor = False
           end
           object ComboBox_meta: TComboBox
@@ -200,7 +197,6 @@ object FormNginxtool: TFormNginxtool
             Top = 12
             Width = 34
             Caption = 'buflen'
-            Color = clDefault
             ParentColor = False
           end
           object SpinEdit_buflen: TSpinEdit
@@ -214,6 +210,13 @@ object FormNginxtool: TFormNginxtool
             TabOrder = 8
             Value = 1000
           end
+          object Label12: TLabel
+            Left = 376
+            Height = 12
+            Top = 12
+            Width = 18
+            Caption = 'ms'
+          end
         end
         object TabSheet2: TTabSheet
           Caption = 'RTMP Recording'
@@ -225,7 +228,6 @@ object FormNginxtool: TFormNginxtool
             Top = 12
             Width = 40
             Caption = 'Record'
-            Color = clDefault
             ParentColor = False
           end
           object ComboBox_Record: TComboBox
@@ -321,7 +323,6 @@ object FormNginxtool: TFormNginxtool
             Top = 36
             Width = 41
             Caption = 'RTMP1'
-            Color = clDefault
             ParentColor = False
           end
           object EdRtmp1: TEdit
@@ -340,7 +341,6 @@ object FormNginxtool: TFormNginxtool
             Top = 61
             Width = 41
             Caption = 'RTMP2'
-            Color = clDefault
             ParentColor = False
           end
           object EdRtmp2: TEdit
@@ -369,7 +369,6 @@ object FormNginxtool: TFormNginxtool
             Top = 86
             Width = 41
             Caption = 'RTMP3'
-            Color = clDefault
             ParentColor = False
           end
         end
@@ -385,27 +384,36 @@ object FormNginxtool: TFormNginxtool
     OnClick = ButtonReloadClick
     TabOrder = 3
   end
+  object ButtonShowError: TButton
+    Left = 432
+    Height = 25
+    Top = 280
+    Width = 128
+    Caption = 'Error &log'
+    OnClick = ButtonShowErrorClick
+    TabOrder = 4
+  end
   object UniqueInstance1: TUniqueInstance
     Enabled = True
-    Left = 432
-    Top = 272
+    Left = 400
+    Top = 240
   end
   object Timer1: TTimer
     Enabled = False
     Interval = 500
     OnTimer = Timer1Timer
-    Left = 464
-    Top = 272
+    Left = 440
+    Top = 240
   end
   object JSONPropStorage1: TJSONPropStorage
     StoredValues = <>
     Formatted = True
-    Left = 496
-    Top = 272
+    Left = 480
+    Top = 240
   end
   object TimerLog: TTimer
     OnTimer = TimerLogTimer
-    Left = 528
-    Top = 272
+    Left = 520
+    Top = 240
   end
 end

@@ -14,6 +14,7 @@ type
   { TFormNginxtool }
 
   TFormNginxtool = class(TForm)
+    ButtonShowError: TButton;
     ButtonStart: TButton;
     ButtonStop: TButton;
     ButtonReload: TButton;
@@ -31,6 +32,7 @@ type
     edRecordSuffix: TEdit;
     edRecordMaxSize: TEdit;
     Label11: TLabel;
+    Label12: TLabel;
     Record_path: TDirectoryEdit;
     EdRtmp1: TEdit;
     EdRtmp2: TEdit;
@@ -59,6 +61,7 @@ type
     Timer1: TTimer;
     TimerLog: TTimer;
     UniqueInstance1: TUniqueInstance;
+    procedure ButtonShowErrorClick(Sender: TObject);
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
     procedure ButtonReloadClick(Sender: TObject);
@@ -93,7 +96,7 @@ implementation
 
 uses
   {$ifdef WINDOWS}windows,{$endif} loglistfpc, sockets, RegExpr, process {$ifdef WINDOWS}, JwaPsApi{$endif},
-  DefaultTranslator, LazUTF8Classes, LazFileUtils, DateUtils;
+  DefaultTranslator, LazUTF8Classes, LazFileUtils, DateUtils, frmError;
 
 const
   ngxLogFile = './logs/error.log';
@@ -982,14 +985,35 @@ begin
       myprocess.Execute;
       nginx_process_find:=0;
       Timer1.Enabled:=True;
-      TimerLog.Enabled:=True;
       loglist.AddLog(rsNginxStarted);
+      //TimerLog.Enabled:=True;
     except
       on e:exception do
          loglist.AddLog(rsError+e.Message);
     end;
   finally
     myprocess.Free;
+  end;
+end;
+
+procedure TFormNginxtool.ButtonShowErrorClick(Sender: TObject);
+var
+  errForm: TFormError;
+  fs: TFileStreamUTF8;
+begin
+  if not FileExistsUTF8(errorlog_path) then
+    exit;
+
+  try
+    errForm:=TFormError.Create(self);
+    try
+      errForm.MemoErr.Lines.LoadFromFile(errorlog_path);
+      errForm.MemoErr.SelStart:=errForm.MemoErr.GetTextLen;
+      errForm.ShowModal;
+    finally
+      errForm.Free;
+    end;
+  except
   end;
 end;
 
@@ -1018,8 +1042,8 @@ begin
     myprocess.Parameters.Add('stop');
     try
       myprocess.Execute;
-      TimerLog.Enabled:=True;
       loglist.AddLog(rsNginxStopped);
+      //TimerLog.Enabled:=True;
     except
       on e:exception do
          loglist.AddLog(rsError+e.Message);
@@ -1068,8 +1092,8 @@ begin
       myprocess.Execute;
       nginx_process_find:=0;
       Timer1.Enabled:=True;
-      TimerLog.Enabled:=True;
       loglist.AddLog(rsNginxRestart);
+      //TimerLog.Enabled:=True;
     except
       on e:exception do
          loglist.AddLog(rsError+e.Message);
