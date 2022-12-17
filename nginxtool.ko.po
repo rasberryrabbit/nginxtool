@@ -53,10 +53,20 @@ msgctxt "nginxtool_main.rssetprocessp"
 msgid "Set process priority %d"
 msgstr "프로세스 우선도 설정 %d"
 
+#: tformerror.caption
+msgctxt "tformerror.caption"
+msgid "Error log"
+msgstr ""
+
 #: tformnginxtool.buttonreload.caption
 msgctxt "tformnginxtool.buttonreload.caption"
 msgid "&ReStart"
 msgstr "재시작(&R)"
+
+#: tformnginxtool.buttonshowerror.caption
+msgctxt "tformnginxtool.buttonshowerror.caption"
+msgid "Error &log"
+msgstr ""
 
 #: tformnginxtool.buttonstart.caption
 msgctxt "tformnginxtool.buttonstart.caption"
@@ -138,6 +148,10 @@ msgstr "최대 크기"
 #: tformnginxtool.label11.caption
 msgid "Suffix"
 msgstr "접미사"
+
+#: tformnginxtool.label12.caption
+msgid "ms"
+msgstr ""
 
 #: tformnginxtool.label2.caption
 msgid "meta :"

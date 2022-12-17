@@ -17,8 +17,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="4"/>
-      <BuildNr Value="171"/>
+      <RevisionNr Value="6"/>
+      <BuildNr Value="173"/>
       <StringTable ProductVersion="0.0.0.0"/>
     </VersionInfo>
     <BuildModes>
@@ -57,6 +57,14 @@
         <Filename Value="uconfigparser.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="uConfigParser"/>
+      </Unit>
+      <Unit>
+        <Filename Value="frmerror.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FormError"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="frmError"/>
       </Unit>
     </Units>
   </ProjectOptions>
