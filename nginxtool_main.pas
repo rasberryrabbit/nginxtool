@@ -627,7 +627,12 @@ begin
 
    // ----- application -----
    itemgrpPrev:=itemgrp;
-   itemgrp:=itemgrp.FindItemGroup('application');
+   itemgrp:=itemgrpPrev.FindItemGroup('application');
+   while itemgrp<>nil do begin
+     if itemgrp.FindItemName('hls')=nil then
+       break;
+     itemgrp:=itemgrpPrev.FindItemGroupNext(itemgrp,'application');
+   end;
    if itemgrp=nil then begin
      itemgrpPrev.AddNameGroup(itemgrpPrev.Level+1,'application','live {');
      itemgrp:=itemgrpPrev.FindItemGroup('application');
