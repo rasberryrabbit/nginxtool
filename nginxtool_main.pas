@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ExtCtrls,
   StdCtrls, JSONPropStorage, Spin, ComCtrls, EditBtn, UniqueInstance,
-  uConfigParser;
+  UExceptionLogger, uConfigParser;
 
 type
 
@@ -31,6 +31,7 @@ type
     ComboBox_meta: TComboBox;
     edRecordSuffix: TEdit;
     edRecordMaxSize: TEdit;
+    ExceptionLogger1: TExceptionLogger;
     Label11: TLabel;
     Label12: TLabel;
     Record_path: TDirectoryEdit;
@@ -941,6 +942,7 @@ end;
 
 procedure TFormNginxtool.FormCreate(Sender: TObject);
 begin
+  Application.OnException:=@ExceptionLogger1.HandleException;
   DateSeparator:='/';
   loglist:=TLogListFPC.Create(Self);
   loglist.Name:='loglist1';

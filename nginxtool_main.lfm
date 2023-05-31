@@ -416,4 +416,9 @@ object FormNginxtool: TFormNginxtool
     Left = 520
     Top = 240
   end
+  object ExceptionLogger1: TExceptionLogger
+    MaxCallStackDepth = 20
+    Left = 360
+    Top = 240
+  end
 end

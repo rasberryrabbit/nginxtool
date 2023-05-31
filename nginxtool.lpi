@@ -17,8 +17,8 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="3"/>
-      <RevisionNr Value="8"/>
-      <BuildNr Value="175"/>
+      <RevisionNr Value="9"/>
+      <BuildNr Value="176"/>
       <StringTable ProductVersion="0.0.0.0"/>
     </VersionInfo>
     <BuildModes>
@@ -34,6 +34,9 @@
       </Modes>
     </RunParams>
     <RequiredPackages>
+      <Item>
+        <PackageName Value="ExceptionLogger"/>
+      </Item>
       <Item>
         <PackageName Value="uniqueinstance_package"/>
       </Item>

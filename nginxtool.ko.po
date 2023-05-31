@@ -53,30 +53,21 @@ msgctxt "nginxtool_main.rssetprocessp"
 msgid "Set process priority %d"
 msgstr "프로세스 우선도 설정 %d"
 
-#: tformerror.caption
-msgctxt "tformerror.caption"
-msgid "Error log"
+#: tformnginxtool.buttonreload.caption
+msgid "&ReStart"
 msgstr ""
 
-#: tformnginxtool.buttonreload.caption
-msgctxt "tformnginxtool.buttonreload.caption"
-msgid "&ReStart"
-msgstr "재시작(&R)"
-
 #: tformnginxtool.buttonshowerror.caption
-msgctxt "tformnginxtool.buttonshowerror.caption"
 msgid "Error &log"
 msgstr ""
 
 #: tformnginxtool.buttonstart.caption
-msgctxt "tformnginxtool.buttonstart.caption"
 msgid "&Start"
-msgstr "시작(&S)"
+msgstr ""
 
 #: tformnginxtool.buttonstop.caption
-msgctxt "tformnginxtool.buttonstop.caption"
 msgid "Sto&p"
-msgstr "중단(&p)"
+msgstr ""
 
 #: tformnginxtool.caption
 msgid "nginx rtmp tool"
@@ -84,7 +75,7 @@ msgstr ""
 
 #: tformnginxtool.checkboxmodconf.caption
 msgid "Modify Config File"
-msgstr "설정 파일 수정"
+msgstr ""
 
 #: tformnginxtool.checkbox_idlestm.caption
 msgid "idle_streams"
@@ -96,7 +87,7 @@ msgstr ""
 
 #: tformnginxtool.checkbox_priority.caption
 msgid "Above Normal Priority"
-msgstr "우선도 보통 이상"
+msgstr ""
 
 #: tformnginxtool.checkbox_publishnotify.caption
 msgid "publish_notify"
@@ -107,7 +98,6 @@ msgid "session_relay"
 msgstr ""
 
 #: tformnginxtool.checkbox_waitkey.caption
-msgctxt "tformnginxtool.checkbox_waitkey.caption"
 msgid "wait_key"
 msgstr ""
 
@@ -116,7 +106,6 @@ msgid "wait_video"
 msgstr ""
 
 #: tformnginxtool.chkrecordunique.caption
-msgctxt "tformnginxtool.chkrecordunique.caption"
 msgid "Record Unique"
 msgstr ""
 
@@ -125,7 +114,6 @@ msgid "copy"
 msgstr ""
 
 #: tformnginxtool.combobox_record.text
-msgctxt "tformnginxtool.combobox_record.text"
 msgid "off"
 msgstr ""
 
@@ -135,19 +123,19 @@ msgstr ""
 
 #: tformnginxtool.groupbox1.caption
 msgid " Option "
-msgstr " 설정 "
+msgstr ""
 
 #: tformnginxtool.label1.caption
 msgid "Chunk Size :"
-msgstr "Chunk 크기 :"
+msgstr ""
 
 #: tformnginxtool.label10.caption
 msgid "Max Size"
-msgstr "최대 크기"
+msgstr ""
 
 #: tformnginxtool.label11.caption
 msgid "Suffix"
-msgstr "접미사"
+msgstr ""
 
 #: tformnginxtool.label12.caption
 msgid "ms"
@@ -163,11 +151,11 @@ msgstr ""
 
 #: tformnginxtool.label4.caption
 msgid "Path"
-msgstr "경로"
+msgstr ""
 
 #: tformnginxtool.label5.caption
 msgid "Record"
-msgstr "녹화"
+msgstr ""
 
 #: tformnginxtool.label6.caption
 msgid "RTMP1"
@@ -187,11 +175,11 @@ msgstr ""
 
 #: tformnginxtool.tabsheet1.caption
 msgid "RTMP Live"
-msgstr "RTMP 라이브"
+msgstr ""
 
 #: tformnginxtool.tabsheet2.caption
 msgid "RTMP Recording"
-msgstr "RTMP 녹화"
+msgstr ""
 
 #: tformnginxtool.tabsheet3.caption
 msgid "RTMP Push"
