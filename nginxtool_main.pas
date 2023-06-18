@@ -97,7 +97,7 @@ implementation
 
 uses
   {$ifdef WINDOWS}windows,{$endif} loglistfpc, sockets, RegExpr, process {$ifdef WINDOWS}, JwaPsApi{$endif},
-  DefaultTranslator, LazUTF8Classes, LazFileUtils, DateUtils, frmError;
+  DefaultTranslator, LazFileUtils, DateUtils, frmError;
 
 const
   ngxLogFile = './logs/error.log';
@@ -893,7 +893,7 @@ end;
 
 procedure TFormNginxtool.NginxLogEndLine;
 var
- fs : TFileStreamUTF8;
+ fs : TFileStream;
  l : int64;
  i, j : Integer;
  buf : array[0..1024] of char;
@@ -902,7 +902,7 @@ begin
  if bGotNginxLog or (not FileExistsUTF8(errorlog_path)) then
    exit;
  try
-   fs := TFileStreamUTF8.Create(errorlog_path,fmOpenRead or fmShareDenyNone);
+   fs := TFileStream.Create(errorlog_path,fmOpenRead or fmShareDenyNone);
    try
      l:=fs.Size;
      if l>1024 then
@@ -1018,9 +1018,9 @@ end;
 procedure TFormNginxtool.ButtonShowErrorClick(Sender: TObject);
 var
   errForm: TFormError;
-  fs: TFileStreamUTF8;
+  fs: TFileStream;
 begin
-  if not FileExistsUTF8(errorlog_path) then
+  if not FileExists(errorlog_path) then
     exit;
 
   try
